@@ -66,8 +66,23 @@
 
         .button-group {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            flex-direction: row;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-btn-icon {
+            width: 120px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+        }
+
+        .upload-btn-icon:active {
+            transform: scale(0.95);
+            opacity: 0.8;
         }
 
         .btn {
@@ -290,8 +305,8 @@
 
         <div class="upload-area" id="uploadArea">
             <div class="button-group">
-                <button class="btn camera-btn" id="cameraBtn">Take Photo</button>
-                <button class="btn" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
+                <img src="take.svg" alt="Take Photo" class="upload-btn-icon" id="cameraBtn">
+                <img src="upload.svg" alt="Upload Photo" class="upload-btn-icon" id="uploadBtn">
             </div>
             <input type="file" id="fileInput" accept="image/*">
         </div>
@@ -357,6 +372,7 @@
         const instructions = document.getElementById('instructions');
         const loveIcon = document.getElementById('loveIcon');
         const editIcon = document.getElementById('editIcon');
+        const uploadBtn = document.getElementById('uploadBtn');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -406,6 +422,11 @@
             canvas.style.cursor = 'move';
             editIcon.style.display = 'none';
             loveIcon.style.display = 'block';
+        });
+
+        // Upload button click
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
         });
 
         // File upload
