@@ -207,12 +207,23 @@
         }
 
         .instructions {
-            background: #e7f3ff;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-            color: #004085;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.75);
+            padding: 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            color: white;
+            text-align: center;
+            z-index: 20;
+            line-height: 1.8;
+            cursor: pointer;
+        }
+
+        .instructions.hidden {
+            display: none;
         }
 
         @media (min-width: 768px) {
@@ -285,14 +296,16 @@
         </div>
 
         <div class="editor-container" id="editorContainer">
-            <div class="instructions">
-                Tap "Edit" to adjust the unibrow. Drag to move, pinch to resize, twist to rotate. Tap "Done" when finished!
-            </div>
-
-            <button class="btn camera-btn" id="editModeBtn" style="margin-bottom: 15px; width: 100%;">Edit Unibrow</button>
-
             <div class="canvas-wrapper">
                 <canvas id="canvas"></canvas>
+                <div class="instructions" id="instructions">
+                    Drag to move.<br>
+                    Pinch to resize.<br>
+                    Twist to rotate.<br>
+                    Tap "Done" when finished.<br>
+                    <br>
+                    <strong>Tap the screen to begin editing.</strong>
+                </div>
                 <div class="icon-container">
                     <div class="action-icon" id="shareIcon">
                         <img src="share.svg" alt="Share">
@@ -332,7 +345,7 @@
         const saveIcon = document.getElementById('saveIcon');
         const shareIcon = document.getElementById('shareIcon');
         const newIcon = document.getElementById('newIcon');
-        const editModeBtn = document.getElementById('editModeBtn');
+        const instructions = document.getElementById('instructions');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -358,17 +371,12 @@
         // Load unibrow on page load
         loadUnibrowImage();
 
-        // Edit mode toggle
-        editModeBtn.addEventListener('click', () => {
-            isEditMode = !isEditMode;
-            if (isEditMode) {
-                editModeBtn.textContent = 'Done Editing';
-                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+        // Start editing when instructions overlay is tapped
+        instructions.addEventListener('click', () => {
+            if (!isEditMode) {
+                instructions.classList.add('hidden');
+                isEditMode = true;
                 canvas.style.cursor = 'move';
-            } else {
-                editModeBtn.textContent = 'Edit Unibrow';
-                editModeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-                canvas.style.cursor = 'default';
             }
         });
 
@@ -494,6 +502,13 @@
                 sizeValue = 50;
                 rotationValue = 0;
                 opacityValue = 100;
+                isEditMode = false;
+                canvas.style.cursor = 'default';
+
+                // Show instructions overlay
+                if (instructions) {
+                    instructions.classList.remove('hidden');
+                }
 
                 drawUnibrow();
             };
