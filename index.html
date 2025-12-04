@@ -504,34 +504,37 @@
             try {
                 // Convert canvas to blob
                 canvas.toBlob(async (blob) => {
-                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
+                    const filesArray = [new File([blob], 'my-unibrow.png', { type: 'image/png' })];
 
-                    // Check if Web Share API is supported
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    // Try to share with files
+                    if (navigator.canShare && navigator.canShare({ files: filesArray })) {
                         try {
                             await navigator.share({
-                                files: [file],
-                                title: 'My Frida Kahlo Unibrow',
-                                text: 'Check out my unibrow! 🎨'
+                                files: filesArray
                             });
                         } catch (err) {
                             if (err.name !== 'AbortError') {
                                 console.error('Share failed:', err);
-                                alert('Could not share. Try downloading instead!');
+                            }
+                        }
+                    } else if (navigator.share) {
+                        // iOS doesn't support canShare, so just try to share directly
+                        try {
+                            await navigator.share({
+                                files: filesArray
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share failed:', err);
                             }
                         }
                     } else {
-                        // Fallback to download if sharing not supported
-                        alert('Sharing not supported on this device. Image will be downloaded instead!');
-                        const link = document.createElement('a');
-                        link.download = 'my-unibrow.png';
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
+                        alert('Sharing not supported on this device.');
                     }
                 }, 'image/png');
             } catch (err) {
                 console.error('Error creating share:', err);
-                alert('Could not share. Try downloading instead!');
+                alert('Error: ' + err.message);
             }
         });
 
