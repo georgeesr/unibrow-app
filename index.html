@@ -506,30 +506,18 @@
                 canvas.toBlob(async (blob) => {
                     const filesArray = [new File([blob], 'my-unibrow.png', { type: 'image/png' })];
 
-                    // Try to share with files
-                    if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-                        try {
-                            await navigator.share({
-                                files: filesArray
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
-                                console.error('Share failed:', err);
-                            }
+                    // Share with both files and text
+                    try {
+                        await navigator.share({
+                            files: filesArray,
+                            title: 'My Unibrow',
+                            text: 'Check out my unibrow!'
+                        });
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.error('Share failed:', err);
+                            alert('Share failed: ' + err.message);
                         }
-                    } else if (navigator.share) {
-                        // iOS doesn't support canShare, so just try to share directly
-                        try {
-                            await navigator.share({
-                                files: filesArray
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
-                                console.error('Share failed:', err);
-                            }
-                        }
-                    } else {
-                        alert('Sharing not supported on this device.');
                     }
                 }, 'image/png');
             } catch (err) {
