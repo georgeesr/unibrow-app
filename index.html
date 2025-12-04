@@ -504,25 +504,34 @@
             try {
                 // Convert canvas to blob
                 canvas.toBlob(async (blob) => {
-                    const filesArray = [new File([blob], 'my-unibrow.png', { type: 'image/png' })];
+                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
 
-                    // Share with both files and text
-                    try {
-                        await navigator.share({
-                            files: filesArray,
-                            title: 'My Unibrow',
-                            text: 'Check out my unibrow!'
-                        });
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            console.error('Share failed:', err);
-                            alert('Share failed: ' + err.message);
+                    // Check if Web Share API is supported
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'My Frida Kahlo Unibrow',
+                                text: 'Check out my unibrow! 🎨'
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share failed:', err);
+                                alert('Could not share. Try downloading instead!');
+                            }
                         }
+                    } else {
+                        // Fallback to download if sharing not supported
+                        alert('Sharing not supported on this device. Image will be downloaded instead!');
+                        const link = document.createElement('a');
+                        link.download = 'my-unibrow.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
                     }
                 }, 'image/png');
             } catch (err) {
                 console.error('Error creating share:', err);
-                alert('Error: ' + err.message);
+                alert('Could not share. Try downloading instead!');
             }
         });
 
