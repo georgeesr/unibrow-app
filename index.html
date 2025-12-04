@@ -108,6 +108,7 @@
             border-radius: 10px;
             display: block;
             touch-action: none;
+            cursor: move;
         }
 
         .controls {
@@ -253,7 +254,7 @@
 
         <div class="editor-container" id="editorContainer">
             <div class="instructions">
-                Use the sliders below to position and style your custom unibrow. Adjust the position, size, and rotation to get the perfect Frida Kahlo look!
+                👆 Touch and drag the unibrow to move it. 🤏 Pinch to resize. Use the sliders below for fine-tuning!
             </div>
 
             <div class="canvas-wrapper">
@@ -526,7 +527,130 @@
             ctx.restore();
         }
 
-        // Drag and drop
+        // Touch and drag variables
+        let isDragging = false;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let initialPinchDistance = 0;
+        let initialSize = 50;
+
+        // Touch start - for dragging
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                // Single touch - start dragging
+                isDragging = true;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                lastTouchX = touch.clientX - rect.left;
+                lastTouchY = touch.clientY - rect.top;
+            } else if (e.touches.length === 2) {
+                // Two fingers - start pinching
+                isDragging = false;
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialPinchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                initialSize = parseInt(size.value);
+            }
+            e.preventDefault();
+        });
+
+        // Touch move - for dragging and pinching
+        canvas.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1 && isDragging) {
+                // Single touch - dragging
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const touchX = touch.clientX - rect.left;
+                const touchY = touch.clientY - rect.top;
+
+                // Calculate new position as percentage
+                const newHorizontal = (touchX / canvas.width) * 100;
+                const newVertical = (touchY / canvas.height) * 100;
+
+                // Update position
+                horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
+                verticalPosition.value = Math.max(0, Math.min(100, newVertical));
+
+                horizontalValue.textContent = Math.round(horizontalPosition.value);
+                positionValue.textContent = Math.round(verticalPosition.value);
+
+                lastTouchX = touchX;
+                lastTouchY = touchY;
+
+                drawUnibrow();
+            } else if (e.touches.length === 2) {
+                // Two fingers - pinching
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+
+                // Calculate scale change
+                const scaleChange = currentDistance / initialPinchDistance;
+                let newSize = initialSize * scaleChange;
+
+                // Clamp size between min and max
+                newSize = Math.max(20, Math.min(100, newSize));
+
+                size.value = newSize;
+                sizeValue.textContent = Math.round(newSize);
+
+                drawUnibrow();
+            }
+            e.preventDefault();
+        });
+
+        // Touch end
+        canvas.addEventListener('touchend', (e) => {
+            if (e.touches.length === 0) {
+                isDragging = false;
+            }
+            e.preventDefault();
+        });
+
+        // Mouse support for desktop
+        let isMouseDown = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            const rect = canvas.getBoundingClientRect();
+            lastTouchX = e.clientX - rect.left;
+            lastTouchY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isMouseDown) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                const newHorizontal = (mouseX / canvas.width) * 100;
+                const newVertical = (mouseY / canvas.height) * 100;
+
+                horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
+                verticalPosition.value = Math.max(0, Math.min(100, newVertical));
+
+                horizontalValue.textContent = Math.round(horizontalPosition.value);
+                positionValue.textContent = Math.round(verticalPosition.value);
+
+                drawUnibrow();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isMouseDown = false;
+        });
+
+        // Drag and drop for photo upload
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.style.background = '#f0f4ff';
