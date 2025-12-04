@@ -287,7 +287,7 @@
                     <label>
                         Rotation <span class="value-display" id="rotationValue">0</span>°
                     </label>
-                    <input type="range" id="rotation" min="-30" max="30" value="0">
+                    <input type="range" id="rotation" min="-90" max="90" value="0">
                 </div>
 
                 <div class="control-group">
@@ -633,7 +633,7 @@
                 let newRotation = initialRotation + angleDiff;
 
                 // Clamp rotation between min and max
-                newRotation = Math.max(-30, Math.min(30, newRotation));
+                newRotation = Math.max(-90, Math.min(90, newRotation));
                 rotation.value = newRotation;
                 rotationValue.textContent = Math.round(newRotation);
 
