@@ -543,12 +543,12 @@
                 const touchX = touch.clientX - rect.left;
                 const touchY = touch.clientY - rect.top;
 
-                // Store the offset from touch point to current unibrow position
+                // Store the offset from current unibrow position to touch point
                 const currentX = (horizontalPosition.value / 100) * canvas.width;
                 const currentY = (verticalPosition.value / 100) * canvas.height;
 
-                dragOffsetX = touchX - currentX;
-                dragOffsetY = touchY - currentY;
+                dragOffsetX = currentX - touchX;
+                dragOffsetY = currentY - touchY;
                 isDragging = true;
             } else if (e.touches.length === 2) {
                 // Two fingers - start pinching
@@ -573,9 +573,9 @@
                 const touchX = touch.clientX - rect.left;
                 const touchY = touch.clientY - rect.top;
 
-                // Calculate new position by subtracting the offset
-                const newX = touchX - dragOffsetX;
-                const newY = touchY - dragOffsetY;
+                // Calculate new position by adding the offset
+                const newX = touchX + dragOffsetX;
+                const newY = touchY + dragOffsetY;
 
                 // Convert to percentage
                 const newHorizontal = (newX / canvas.width) * 100;
@@ -631,12 +631,12 @@
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
 
-            // Store the offset from mouse point to current unibrow position
+            // Store the offset from current unibrow position to mouse point
             const currentX = (horizontalPosition.value / 100) * canvas.width;
             const currentY = (verticalPosition.value / 100) * canvas.height;
 
-            mouseDragOffsetX = mouseX - currentX;
-            mouseDragOffsetY = mouseY - currentY;
+            mouseDragOffsetX = currentX - mouseX;
+            mouseDragOffsetY = currentY - mouseY;
             isMouseDown = true;
         });
 
@@ -646,9 +646,9 @@
                 const mouseX = e.clientX - rect.left;
                 const mouseY = e.clientY - rect.top;
 
-                // Calculate new position by subtracting the offset
-                const newX = mouseX - mouseDragOffsetX;
-                const newY = mouseY - mouseDragOffsetY;
+                // Calculate new position by adding the offset
+                const newX = mouseX + mouseDragOffsetX;
+                const newY = mouseY + mouseDragOffsetY;
 
                 const newHorizontal = (newX / canvas.width) * 100;
                 const newVertical = (newY / canvas.height) * 100;
