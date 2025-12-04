@@ -116,6 +116,10 @@
             margin-top: 20px;
         }
 
+        .title-image.editing {
+            max-width: 150px;
+        }
+
         .canvas-wrapper {
             position: relative;
             display: inline-block;
@@ -378,6 +382,7 @@
         const loveIcon = document.getElementById('loveIcon');
         const editIcon = document.getElementById('editIcon');
         const uploadBtn = document.getElementById('uploadBtn');
+        const titleImage = document.querySelector('.title-image');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -528,6 +533,7 @@
         newIcon.addEventListener('click', () => {
             uploadArea.style.display = 'block';
             editorContainer.style.display = 'none';
+            titleImage.classList.remove('editing');
             currentImage = null;
             fileInput.value = '';
         });
@@ -553,6 +559,7 @@
                 // Show editor
                 uploadArea.style.display = 'none';
                 editorContainer.style.display = 'block';
+                titleImage.classList.add('editing');
 
                 // Reset to defaults
                 verticalPositionValue = 25;
