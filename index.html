@@ -397,6 +397,10 @@
             tempCanvas.width = video.videoWidth;
             tempCanvas.height = video.videoHeight;
             const tempCtx = tempCanvas.getContext('2d');
+
+            // Flip the image horizontally to match the mirrored preview
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
             tempCtx.drawImage(video, 0, 0);
 
             tempCanvas.toBlob((blob) => {
