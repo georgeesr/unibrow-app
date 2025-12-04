@@ -107,7 +107,7 @@
             height: auto;
             border-radius: 10px;
             display: block;
-            touch-action: none;
+            touch-action: pan-y;
             cursor: move;
         }
 
@@ -466,19 +466,27 @@
         // Touch start - for dragging
         canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
-                // Single touch - start dragging
+                // Single touch - check if it's on the unibrow area
                 const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
                 const touchX = touch.clientX - rect.left;
                 const touchY = touch.clientY - rect.top;
 
-                // Store the offset from current unibrow position to touch point
+                // Get current unibrow position
                 const currentX = (horizontalPositionValue / 100) * canvas.width;
                 const currentY = (verticalPositionValue / 100) * canvas.height;
 
-                dragOffsetX = currentX - touchX;
-                dragOffsetY = currentY - touchY;
-                isDragging = true;
+                // Calculate distance from touch to unibrow center
+                const distance = Math.hypot(touchX - currentX, touchY - currentY);
+                const browSize = (sizeValue / 100) * canvas.width * 0.3; // Approximate touch area
+
+                // Only start dragging if touch is near the unibrow
+                if (distance < browSize) {
+                    dragOffsetX = currentX - touchX;
+                    dragOffsetY = currentY - touchY;
+                    isDragging = true;
+                    e.preventDefault(); // Prevent scroll only when dragging
+                }
             } else if (e.touches.length === 2) {
                 // Two fingers - start pinching and rotating
                 isDragging = false;
@@ -498,14 +506,17 @@
                     touch2.clientX - touch1.clientX
                 ) * (180 / Math.PI);
                 initialRotation = rotationValue;
+
+                e.preventDefault(); // Prevent scroll during multi-touch
             }
-            e.preventDefault();
         });
 
         // Touch move - for dragging and pinching
         canvas.addEventListener('touchmove', (e) => {
             if (e.touches.length === 1 && isDragging) {
                 // Single touch - dragging
+                e.preventDefault(); // Only prevent scroll when actively dragging
+
                 const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
                 const touchX = touch.clientX - rect.left;
@@ -525,6 +536,7 @@
 
                 drawUnibrow();
             } else if (e.touches.length === 2) {
+                e.preventDefault(); // Prevent scroll during multi-touch
                 // Two fingers - pinching and rotating
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
@@ -561,7 +573,6 @@
 
                 drawUnibrow();
             }
-            e.preventDefault();
         });
 
         // Touch end
@@ -569,7 +580,6 @@
             if (e.touches.length === 0) {
                 isDragging = false;
             }
-            e.preventDefault();
         });
 
         // Mouse support for desktop
