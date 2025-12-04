@@ -529,8 +529,8 @@
 
         // Touch and drag variables
         let isDragging = false;
-        let lastTouchX = 0;
-        let lastTouchY = 0;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
         let initialPinchDistance = 0;
         let initialSize = 50;
 
@@ -538,11 +538,18 @@
         canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length === 1) {
                 // Single touch - start dragging
-                isDragging = true;
                 const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
-                lastTouchX = touch.clientX - rect.left;
-                lastTouchY = touch.clientY - rect.top;
+                const touchX = touch.clientX - rect.left;
+                const touchY = touch.clientY - rect.top;
+
+                // Store the offset from touch point to current unibrow position
+                const currentX = (horizontalPosition.value / 100) * canvas.width;
+                const currentY = (verticalPosition.value / 100) * canvas.height;
+
+                dragOffsetX = touchX - currentX;
+                dragOffsetY = touchY - currentY;
+                isDragging = true;
             } else if (e.touches.length === 2) {
                 // Two fingers - start pinching
                 isDragging = false;
@@ -566,19 +573,20 @@
                 const touchX = touch.clientX - rect.left;
                 const touchY = touch.clientY - rect.top;
 
-                // Calculate new position as percentage
-                const newHorizontal = (touchX / canvas.width) * 100;
-                const newVertical = (touchY / canvas.height) * 100;
+                // Calculate new position by subtracting the offset
+                const newX = touchX - dragOffsetX;
+                const newY = touchY - dragOffsetY;
 
-                // Update position
+                // Convert to percentage
+                const newHorizontal = (newX / canvas.width) * 100;
+                const newVertical = (newY / canvas.height) * 100;
+
+                // Update position with clamping
                 horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
                 verticalPosition.value = Math.max(0, Math.min(100, newVertical));
 
                 horizontalValue.textContent = Math.round(horizontalPosition.value);
                 positionValue.textContent = Math.round(verticalPosition.value);
-
-                lastTouchX = touchX;
-                lastTouchY = touchY;
 
                 drawUnibrow();
             } else if (e.touches.length === 2) {
@@ -615,12 +623,21 @@
 
         // Mouse support for desktop
         let isMouseDown = false;
+        let mouseDragOffsetX = 0;
+        let mouseDragOffsetY = 0;
 
         canvas.addEventListener('mousedown', (e) => {
-            isMouseDown = true;
             const rect = canvas.getBoundingClientRect();
-            lastTouchX = e.clientX - rect.left;
-            lastTouchY = e.clientY - rect.top;
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Store the offset from mouse point to current unibrow position
+            const currentX = (horizontalPosition.value / 100) * canvas.width;
+            const currentY = (verticalPosition.value / 100) * canvas.height;
+
+            mouseDragOffsetX = mouseX - currentX;
+            mouseDragOffsetY = mouseY - currentY;
+            isMouseDown = true;
         });
 
         canvas.addEventListener('mousemove', (e) => {
@@ -629,8 +646,12 @@
                 const mouseX = e.clientX - rect.left;
                 const mouseY = e.clientY - rect.top;
 
-                const newHorizontal = (mouseX / canvas.width) * 100;
-                const newVertical = (mouseY / canvas.height) * 100;
+                // Calculate new position by subtracting the offset
+                const newX = mouseX - mouseDragOffsetX;
+                const newY = mouseY - mouseDragOffsetY;
+
+                const newHorizontal = (newX / canvas.width) * 100;
+                const newVertical = (newY / canvas.height) * 100;
 
                 horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
                 verticalPosition.value = Math.max(0, Math.min(100, newVertical));
