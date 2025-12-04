@@ -297,14 +297,12 @@
                     <div class="action-icon" id="saveIcon">
                         <img src="save.svg" alt="Save">
                     </div>
+                    <div class="action-icon" id="newIcon">
+                        <img src="new.svg" alt="New">
+                    </div>
                 </div>
             </div>
 
-            <div class="controls">
-                <div class="button-row">
-                    <button class="btn reset-btn" id="resetBtn" style="width: 100%;">New</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -330,7 +328,7 @@
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const saveIcon = document.getElementById('saveIcon');
         const shareIcon = document.getElementById('shareIcon');
-        const resetBtn = document.getElementById('resetBtn');
+        const newIcon = document.getElementById('newIcon');
         const editModeBtn = document.getElementById('editModeBtn');
 
         // Hidden control values (no UI sliders, just internal state)
@@ -457,8 +455,8 @@
             link.click();
         });
 
-        // Reset
-        resetBtn.addEventListener('click', () => {
+        // Reset/New
+        newIcon.addEventListener('click', () => {
             uploadArea.style.display = 'block';
             editorContainer.style.display = 'none';
             currentImage = null;
