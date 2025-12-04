@@ -319,6 +319,8 @@
                 </div>
             </div>
 
+            <button class="btn camera-btn" id="editModeBtn" style="margin-top: 15px; width: 100%; display: none;">Done Editing</button>
+
         </div>
     </div>
 
@@ -346,6 +348,7 @@
         const shareIcon = document.getElementById('shareIcon');
         const newIcon = document.getElementById('newIcon');
         const instructions = document.getElementById('instructions');
+        const editModeBtn = document.getElementById('editModeBtn');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -377,6 +380,23 @@
                 instructions.classList.add('hidden');
                 isEditMode = true;
                 canvas.style.cursor = 'move';
+                editModeBtn.style.display = 'block';
+                editModeBtn.textContent = 'Done Editing';
+                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+            }
+        });
+
+        // Toggle edit mode with button
+        editModeBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            if (isEditMode) {
+                editModeBtn.textContent = 'Done Editing';
+                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                canvas.style.cursor = 'move';
+            } else {
+                editModeBtn.textContent = 'Edit';
+                editModeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                canvas.style.cursor = 'default';
             }
         });
 
@@ -505,10 +525,11 @@
                 isEditMode = false;
                 canvas.style.cursor = 'default';
 
-                // Show instructions overlay
+                // Show instructions overlay and hide edit button
                 if (instructions) {
                     instructions.classList.remove('hidden');
                 }
+                editModeBtn.style.display = 'none';
 
                 drawUnibrow();
             };
