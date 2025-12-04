@@ -262,41 +262,6 @@
             </div>
 
             <div class="controls">
-                <div class="control-group">
-                    <label>
-                        Vertical Position <span class="value-display" id="positionValue">25</span>%
-                    </label>
-                    <input type="range" id="verticalPosition" min="0" max="100" value="25">
-                </div>
-
-                <div class="control-group">
-                    <label>
-                        Horizontal Position <span class="value-display" id="horizontalValue">50</span>%
-                    </label>
-                    <input type="range" id="horizontalPosition" min="0" max="100" value="50">
-                </div>
-
-                <div class="control-group">
-                    <label>
-                        Size <span class="value-display" id="sizeValue">50</span>%
-                    </label>
-                    <input type="range" id="size" min="20" max="100" value="50">
-                </div>
-
-                <div class="control-group">
-                    <label>
-                        Rotation <span class="value-display" id="rotationValue">0</span>°
-                    </label>
-                    <input type="range" id="rotation" min="-90" max="90" value="0">
-                </div>
-
-                <div class="control-group">
-                    <label>
-                        Opacity <span class="value-display" id="opacityValue">100</span>%
-                    </label>
-                    <input type="range" id="opacity" min="50" max="100" value="100">
-                </div>
-
                 <div class="button-row">
                     <button class="btn download-btn" id="downloadBtn">💾 Download</button>
                     <button class="btn reset-btn" id="resetBtn">🔄 New Photo</button>
@@ -328,19 +293,12 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const resetBtn = document.getElementById('resetBtn');
 
-        // Controls
-        const verticalPosition = document.getElementById('verticalPosition');
-        const horizontalPosition = document.getElementById('horizontalPosition');
-        const size = document.getElementById('size');
-        const rotation = document.getElementById('rotation');
-        const opacity = document.getElementById('opacity');
-
-        // Value displays
-        const positionValue = document.getElementById('positionValue');
-        const horizontalValue = document.getElementById('horizontalValue');
-        const sizeValue = document.getElementById('sizeValue');
-        const rotationValue = document.getElementById('rotationValue');
-        const opacityValue = document.getElementById('opacityValue');
+        // Hidden control values (no UI sliders, just internal state)
+        let verticalPositionValue = 25;
+        let horizontalPositionValue = 50;
+        let sizeValue = 50;
+        let rotationValue = 0;
+        let opacityValue = 100;
 
         let currentImage = null;
         let unibrowImage = null;
@@ -357,32 +315,6 @@
 
         // Load unibrow on page load
         loadUnibrowImage();
-
-        // Update value displays
-        verticalPosition.addEventListener('input', (e) => {
-            positionValue.textContent = e.target.value;
-            drawUnibrow();
-        });
-
-        horizontalPosition.addEventListener('input', (e) => {
-            horizontalValue.textContent = e.target.value;
-            drawUnibrow();
-        });
-
-        size.addEventListener('input', (e) => {
-            sizeValue.textContent = e.target.value;
-            drawUnibrow();
-        });
-
-        rotation.addEventListener('input', (e) => {
-            rotationValue.textContent = e.target.value;
-            drawUnibrow();
-        });
-
-        opacity.addEventListener('input', (e) => {
-            opacityValue.textContent = e.target.value;
-            drawUnibrow();
-        });
 
         // File upload
         fileInput.addEventListener('change', (e) => {
@@ -465,16 +397,11 @@
                 editorContainer.style.display = 'block';
 
                 // Reset to defaults
-                verticalPosition.value = 25;
-                positionValue.textContent = '25';
-                horizontalPosition.value = 50;
-                horizontalValue.textContent = '50';
-                size.value = 50;
-                sizeValue.textContent = '50';
-                rotation.value = 0;
-                rotationValue.textContent = '0';
-                opacity.value = 100;
-                opacityValue.textContent = '100';
+                verticalPositionValue = 25;
+                horizontalPositionValue = 50;
+                sizeValue = 50;
+                rotationValue = 0;
+                opacityValue = 100;
 
                 drawUnibrow();
             };
@@ -494,11 +421,11 @@
             ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
 
             // Get values
-            const yPos = (verticalPosition.value / 100) * canvas.height;
-            const xPos = (horizontalPosition.value / 100) * canvas.width;
-            const scale = size.value / 100;
-            const angle = (rotation.value * Math.PI) / 180;
-            const alpha = opacity.value / 100;
+            const yPos = (verticalPositionValue / 100) * canvas.height;
+            const xPos = (horizontalPositionValue / 100) * canvas.width;
+            const scale = sizeValue / 100;
+            const angle = (rotationValue * Math.PI) / 180;
+            const alpha = opacityValue / 100;
 
             // Calculate scaled dimensions
             const browWidth = unibrowImage.width * scale * (canvas.width / 800);
@@ -546,8 +473,8 @@
                 const touchY = touch.clientY - rect.top;
 
                 // Store the offset from current unibrow position to touch point
-                const currentX = (horizontalPosition.value / 100) * canvas.width;
-                const currentY = (verticalPosition.value / 100) * canvas.height;
+                const currentX = (horizontalPositionValue / 100) * canvas.width;
+                const currentY = (verticalPositionValue / 100) * canvas.height;
 
                 dragOffsetX = currentX - touchX;
                 dragOffsetY = currentY - touchY;
@@ -563,14 +490,14 @@
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
-                initialSize = parseInt(size.value);
+                initialSize = sizeValue;
 
                 // Store initial angle for rotation
                 initialRotationAngle = Math.atan2(
                     touch2.clientY - touch1.clientY,
                     touch2.clientX - touch1.clientX
                 ) * (180 / Math.PI);
-                initialRotation = parseInt(rotation.value);
+                initialRotation = rotationValue;
             }
             e.preventDefault();
         });
@@ -593,11 +520,8 @@
                 const newVertical = (newY / canvas.height) * 100;
 
                 // Update position with clamping
-                horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
-                verticalPosition.value = Math.max(0, Math.min(100, newVertical));
-
-                horizontalValue.textContent = Math.round(horizontalPosition.value);
-                positionValue.textContent = Math.round(verticalPosition.value);
+                horizontalPositionValue = Math.max(0, Math.min(100, newHorizontal));
+                verticalPositionValue = Math.max(0, Math.min(100, newVertical));
 
                 drawUnibrow();
             } else if (e.touches.length === 2) {
@@ -615,8 +539,7 @@
 
                 // Clamp size between min and max
                 newSize = Math.max(20, Math.min(100, newSize));
-                size.value = newSize;
-                sizeValue.textContent = Math.round(newSize);
+                sizeValue = newSize;
 
                 // Calculate rotation change
                 const currentAngle = Math.atan2(
@@ -634,8 +557,7 @@
 
                 // Clamp rotation between min and max
                 newRotation = Math.max(-90, Math.min(90, newRotation));
-                rotation.value = newRotation;
-                rotationValue.textContent = Math.round(newRotation);
+                rotationValue = newRotation;
 
                 drawUnibrow();
             }
@@ -661,8 +583,8 @@
             const mouseY = e.clientY - rect.top;
 
             // Store the offset from current unibrow position to mouse point
-            const currentX = (horizontalPosition.value / 100) * canvas.width;
-            const currentY = (verticalPosition.value / 100) * canvas.height;
+            const currentX = (horizontalPositionValue / 100) * canvas.width;
+            const currentY = (verticalPositionValue / 100) * canvas.height;
 
             mouseDragOffsetX = currentX - mouseX;
             mouseDragOffsetY = currentY - mouseY;
@@ -682,11 +604,8 @@
                 const newHorizontal = (newX / canvas.width) * 100;
                 const newVertical = (newY / canvas.height) * 100;
 
-                horizontalPosition.value = Math.max(0, Math.min(100, newHorizontal));
-                verticalPosition.value = Math.max(0, Math.min(100, newVertical));
-
-                horizontalValue.textContent = Math.round(horizontalPosition.value);
-                positionValue.textContent = Math.round(verticalPosition.value);
+                horizontalPositionValue = Math.max(0, Math.min(100, newHorizontal));
+                verticalPositionValue = Math.max(0, Math.min(100, newVertical));
 
                 drawUnibrow();
             }
