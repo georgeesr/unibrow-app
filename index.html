@@ -264,8 +264,9 @@
             <div class="controls">
                 <button class="btn camera-btn" id="editModeBtn" style="margin-bottom: 15px; width: 100%;">✏️ Edit Unibrow</button>
                 <div class="button-row">
-                    <button class="btn download-btn" id="downloadBtn">💾 Download</button>
-                    <button class="btn reset-btn" id="resetBtn">🔄 New Photo</button>
+                    <button class="btn download-btn" id="shareBtn">📤 Share</button>
+                    <button class="btn download-btn" id="downloadBtn">💾 Save</button>
+                    <button class="btn reset-btn" id="resetBtn">🔄 New</button>
                 </div>
             </div>
         </div>
@@ -292,6 +293,7 @@
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const resetBtn = document.getElementById('resetBtn');
         const editModeBtn = document.getElementById('editModeBtn');
 
@@ -375,10 +377,46 @@
             cameraModal.classList.remove('active');
         }
 
+        // Share
+        shareBtn.addEventListener('click', async () => {
+            try {
+                // Convert canvas to blob
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
+
+                    // Check if Web Share API is supported
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'My Frida Kahlo Unibrow',
+                                text: 'Check out my unibrow! 🎨'
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share failed:', err);
+                                alert('Could not share. Try downloading instead!');
+                            }
+                        }
+                    } else {
+                        // Fallback to download if sharing not supported
+                        alert('Sharing not supported on this device. Image will be downloaded instead!');
+                        const link = document.createElement('a');
+                        link.download = 'my-unibrow.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }
+                }, 'image/png');
+            } catch (err) {
+                console.error('Error creating share:', err);
+                alert('Could not share. Try downloading instead!');
+            }
+        });
+
         // Download
         downloadBtn.addEventListener('click', () => {
             const link = document.createElement('a');
-            link.download = 'frida-unibrow.png';
+            link.download = 'my-unibrow.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
