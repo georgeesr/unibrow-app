@@ -539,14 +539,36 @@
         });
 
         // Save/Download
-        saveIcon.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'my-unibrow.png';
-            link.href = canvas.toDataURL('image/png');
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        saveIcon.addEventListener('click', async () => {
+            try {
+                // On iOS, use share API to save to Photos
+                if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+                    canvas.toBlob(async (blob) => {
+                        const filesArray = [new File([blob], 'my-unibrow.png', { type: 'image/png' })];
+
+                        try {
+                            await navigator.share({
+                                files: filesArray
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error('Save failed:', err);
+                            }
+                        }
+                    }, 'image/png');
+                } else {
+                    // Desktop/Android: direct download
+                    const link = document.createElement('a');
+                    link.download = 'my-unibrow.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (err) {
+                console.error('Error saving:', err);
+            }
         });
 
         // Reset/New
