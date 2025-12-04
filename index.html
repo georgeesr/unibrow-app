@@ -252,6 +252,7 @@
             max-width: 100%;
             max-height: 70vh;
             border-radius: 10px;
+            transform: scaleX(-1);
         }
 
         .camera-controls {
@@ -396,6 +397,10 @@
             tempCanvas.width = video.videoWidth;
             tempCanvas.height = video.videoHeight;
             const tempCtx = tempCanvas.getContext('2d');
+
+            // Flip horizontally to un-mirror the video (since preview is mirrored)
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
             tempCtx.drawImage(video, 0, 0);
 
             tempCanvas.toBlob((blob) => {
