@@ -111,6 +111,32 @@
             cursor: move;
         }
 
+        .share-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            padding: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, background 0.2s;
+            z-index: 10;
+        }
+
+        .share-icon:active {
+            transform: scale(0.9);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .share-icon img {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
         .controls {
             margin-top: 20px;
             padding: 15px;
@@ -261,11 +287,13 @@
 
             <div class="canvas-wrapper">
                 <canvas id="canvas"></canvas>
+                <div class="share-icon" id="shareIcon">
+                    <img src="share.svg" alt="Share">
+                </div>
             </div>
 
             <div class="controls">
                 <div class="button-row">
-                    <button class="btn download-btn" id="shareBtn">Share</button>
                     <button class="btn download-btn" id="downloadBtn">Save</button>
                     <button class="btn reset-btn" id="resetBtn">New</button>
                 </div>
@@ -294,7 +322,7 @@
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const downloadBtn = document.getElementById('downloadBtn');
-        const shareBtn = document.getElementById('shareBtn');
+        const shareIcon = document.getElementById('shareIcon');
         const resetBtn = document.getElementById('resetBtn');
         const editModeBtn = document.getElementById('editModeBtn');
 
@@ -379,7 +407,7 @@
         }
 
         // Share
-        shareBtn.addEventListener('click', async () => {
+        shareIcon.addEventListener('click', async () => {
             try {
                 // Convert canvas to blob
                 canvas.toBlob(async (blob) => {
