@@ -322,8 +322,11 @@
                         <img src="new.svg" alt="New">
                     </div>
                 </div>
-                <div class="action-icon" id="editModeBtn" style="position: absolute; bottom: 10px; left: 10px; display: none; z-index: 10; width: 80px;">
+                <div class="action-icon" id="loveIcon" style="position: absolute; bottom: 10px; left: 10px; display: none; z-index: 10; width: 80px; cursor: pointer;">
                     <img src="love.svg" alt="Done" style="width: 100%; height: auto;">
+                </div>
+                <div class="action-icon" id="editIcon" style="position: absolute; bottom: 10px; left: 10px; display: none; z-index: 10; width: 80px; cursor: pointer;">
+                    <img src="edit.svg" alt="Edit" style="width: 100%; height: auto;">
                 </div>
             </div>
 
@@ -354,7 +357,8 @@
         const shareIcon = document.getElementById('shareIcon');
         const newIcon = document.getElementById('newIcon');
         const instructions = document.getElementById('instructions');
-        const editModeBtn = document.getElementById('editModeBtn');
+        const loveIcon = document.getElementById('loveIcon');
+        const editIcon = document.getElementById('editIcon');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -386,18 +390,24 @@
                 instructions.classList.add('hidden');
                 isEditMode = true;
                 canvas.style.cursor = 'move';
-                editModeBtn.style.display = 'block';
+                loveIcon.style.display = 'block';
             }
         });
 
-        // Toggle edit mode with love icon
-        editModeBtn.addEventListener('click', () => {
-            isEditMode = !isEditMode;
-            if (isEditMode) {
-                canvas.style.cursor = 'move';
-            } else {
-                canvas.style.cursor = 'default';
-            }
+        // Click love icon to lock unibrow (done editing) - shows edit icon
+        loveIcon.addEventListener('click', () => {
+            isEditMode = false;
+            canvas.style.cursor = 'default';
+            loveIcon.style.display = 'none';
+            editIcon.style.display = 'block';
+        });
+
+        // Click edit icon to unlock unibrow (edit mode) - shows love icon
+        editIcon.addEventListener('click', () => {
+            isEditMode = true;
+            canvas.style.cursor = 'move';
+            editIcon.style.display = 'none';
+            loveIcon.style.display = 'block';
         });
 
         // File upload
@@ -529,11 +539,12 @@
                 isEditMode = false;
                 canvas.style.cursor = 'default';
 
-                // Show instructions overlay and hide edit button
+                // Show instructions overlay and hide edit icons
                 if (instructions) {
                     instructions.classList.remove('hidden');
                 }
-                editModeBtn.style.display = 'none';
+                loveIcon.style.display = 'none';
+                editIcon.style.display = 'none';
 
                 drawUnibrow();
             };
