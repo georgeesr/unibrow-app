@@ -111,27 +111,30 @@
             cursor: move;
         }
 
-        .share-icon {
+        .icon-container {
             position: absolute;
             top: 15px;
             right: 15px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            padding: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             z-index: 10;
         }
 
-        .share-icon:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 1);
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
         }
 
-        .share-icon img {
+        .action-icon:active {
+            transform: scale(0.9);
+            opacity: 0.8;
+        }
+
+        .action-icon img {
             width: 100%;
             height: 100%;
             display: block;
@@ -287,15 +290,19 @@
 
             <div class="canvas-wrapper">
                 <canvas id="canvas"></canvas>
-                <div class="share-icon" id="shareIcon">
-                    <img src="share.svg" alt="Share">
+                <div class="icon-container">
+                    <div class="action-icon" id="shareIcon">
+                        <img src="share.svg" alt="Share">
+                    </div>
+                    <div class="action-icon" id="saveIcon">
+                        <img src="save.svg" alt="Save">
+                    </div>
                 </div>
             </div>
 
             <div class="controls">
                 <div class="button-row">
-                    <button class="btn download-btn" id="downloadBtn">Save</button>
-                    <button class="btn reset-btn" id="resetBtn">New</button>
+                    <button class="btn reset-btn" id="resetBtn" style="width: 100%;">New</button>
                 </div>
             </div>
         </div>
@@ -321,7 +328,7 @@
         const video = document.getElementById('video');
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
+        const saveIcon = document.getElementById('saveIcon');
         const shareIcon = document.getElementById('shareIcon');
         const resetBtn = document.getElementById('resetBtn');
         const editModeBtn = document.getElementById('editModeBtn');
@@ -442,8 +449,8 @@
             }
         });
 
-        // Download
-        downloadBtn.addEventListener('click', () => {
+        // Save/Download
+        saveIcon.addEventListener('click', () => {
             const link = document.createElement('a');
             link.download = 'my-unibrow.png';
             link.href = canvas.toDataURL('image/png');
