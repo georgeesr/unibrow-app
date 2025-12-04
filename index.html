@@ -254,7 +254,7 @@
 
         <div class="editor-container" id="editorContainer">
             <div class="instructions">
-                👆 Touch and drag the unibrow to move it. 🤏 Pinch to resize. Use the sliders below for fine-tuning!
+                👆 Touch and drag to move. 🤏 Pinch to resize. 🔄 Twist two fingers to rotate. Use sliders for fine-tuning!
             </div>
 
             <div class="canvas-wrapper">
@@ -533,6 +533,8 @@
         let dragOffsetY = 0;
         let initialPinchDistance = 0;
         let initialSize = 50;
+        let initialRotationAngle = 0;
+        let initialRotation = 0;
 
         // Touch start - for dragging
         canvas.addEventListener('touchstart', (e) => {
@@ -551,15 +553,24 @@
                 dragOffsetY = currentY - touchY;
                 isDragging = true;
             } else if (e.touches.length === 2) {
-                // Two fingers - start pinching
+                // Two fingers - start pinching and rotating
                 isDragging = false;
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
+
+                // Store initial distance for pinch
                 initialPinchDistance = Math.hypot(
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
                 initialSize = parseInt(size.value);
+
+                // Store initial angle for rotation
+                initialRotationAngle = Math.atan2(
+                    touch2.clientY - touch1.clientY,
+                    touch2.clientX - touch1.clientX
+                ) * (180 / Math.PI);
+                initialRotation = parseInt(rotation.value);
             }
             e.preventDefault();
         });
@@ -590,23 +601,41 @@
 
                 drawUnibrow();
             } else if (e.touches.length === 2) {
-                // Two fingers - pinching
+                // Two fingers - pinching and rotating
                 const touch1 = e.touches[0];
                 const touch2 = e.touches[1];
+
+                // Calculate scale change for pinch
                 const currentDistance = Math.hypot(
                     touch2.clientX - touch1.clientX,
                     touch2.clientY - touch1.clientY
                 );
-
-                // Calculate scale change
                 const scaleChange = currentDistance / initialPinchDistance;
                 let newSize = initialSize * scaleChange;
 
                 // Clamp size between min and max
                 newSize = Math.max(20, Math.min(100, newSize));
-
                 size.value = newSize;
                 sizeValue.textContent = Math.round(newSize);
+
+                // Calculate rotation change
+                const currentAngle = Math.atan2(
+                    touch2.clientY - touch1.clientY,
+                    touch2.clientX - touch1.clientX
+                ) * (180 / Math.PI);
+
+                let angleDiff = currentAngle - initialRotationAngle;
+
+                // Normalize angle difference to -180 to 180
+                while (angleDiff > 180) angleDiff -= 360;
+                while (angleDiff < -180) angleDiff += 360;
+
+                let newRotation = initialRotation + angleDiff;
+
+                // Clamp rotation between min and max
+                newRotation = Math.max(-30, Math.min(30, newRotation));
+                rotation.value = newRotation;
+                rotationValue.textContent = Math.round(newRotation);
 
                 drawUnibrow();
             }
