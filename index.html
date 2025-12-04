@@ -322,7 +322,9 @@
                         <img src="new.svg" alt="New">
                     </div>
                 </div>
-                <button class="btn camera-btn" id="editModeBtn" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: none; z-index: 10; padding: 12px 20px; width: auto;">Done Editing</button>
+                <div class="action-icon" id="editModeBtn" style="position: absolute; bottom: 10px; left: 10px; display: none; z-index: 10; width: 80px;">
+                    <img src="love.svg" alt="Done" style="width: 100%; height: auto;">
+                </div>
             </div>
 
         </div>
@@ -385,21 +387,15 @@
                 isEditMode = true;
                 canvas.style.cursor = 'move';
                 editModeBtn.style.display = 'block';
-                editModeBtn.textContent = 'Done Editing';
-                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
             }
         });
 
-        // Toggle edit mode with button
+        // Toggle edit mode with love icon
         editModeBtn.addEventListener('click', () => {
             isEditMode = !isEditMode;
             if (isEditMode) {
-                editModeBtn.textContent = 'Done Editing';
-                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
                 canvas.style.cursor = 'move';
             } else {
-                editModeBtn.textContent = 'Edit';
-                editModeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
                 canvas.style.cursor = 'default';
             }
         });
