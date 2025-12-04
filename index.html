@@ -254,7 +254,7 @@
 
         <div class="editor-container" id="editorContainer">
             <div class="instructions">
-                👆 Touch and drag to move. 🤏 Pinch to resize. 🔄 Twist two fingers to rotate. Use sliders for fine-tuning!
+                👆 Tap "Edit" to adjust the unibrow. Drag to move, pinch to resize, twist to rotate. Tap "Done" when finished!
             </div>
 
             <div class="canvas-wrapper">
@@ -262,6 +262,7 @@
             </div>
 
             <div class="controls">
+                <button class="btn camera-btn" id="editModeBtn" style="margin-bottom: 15px; width: 100%;">✏️ Edit Unibrow</button>
                 <div class="button-row">
                     <button class="btn download-btn" id="downloadBtn">💾 Download</button>
                     <button class="btn reset-btn" id="resetBtn">🔄 New Photo</button>
@@ -292,6 +293,7 @@
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const editModeBtn = document.getElementById('editModeBtn');
 
         // Hidden control values (no UI sliders, just internal state)
         let verticalPositionValue = 25;
@@ -303,6 +305,7 @@
         let currentImage = null;
         let unibrowImage = null;
         let stream = null;
+        let isEditMode = false;
 
         // Load the unibrow image
         const loadUnibrowImage = () => {
@@ -315,6 +318,20 @@
 
         // Load unibrow on page load
         loadUnibrowImage();
+
+        // Edit mode toggle
+        editModeBtn.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            if (isEditMode) {
+                editModeBtn.textContent = '✅ Done Editing';
+                editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                canvas.style.cursor = 'move';
+            } else {
+                editModeBtn.textContent = '✏️ Edit Unibrow';
+                editModeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                canvas.style.cursor = 'default';
+            }
+        });
 
         // File upload
         fileInput.addEventListener('change', (e) => {
@@ -465,8 +482,10 @@
 
         // Touch start - for dragging
         canvas.addEventListener('touchstart', (e) => {
+            if (!isEditMode) return; // Only handle touches in edit mode
+
             if (e.touches.length === 1) {
-                // Single touch - check if it's on the unibrow area
+                // Single touch - start dragging
                 const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
                 const touchX = touch.clientX - rect.left;
@@ -476,17 +495,10 @@
                 const currentX = (horizontalPositionValue / 100) * canvas.width;
                 const currentY = (verticalPositionValue / 100) * canvas.height;
 
-                // Calculate distance from touch to unibrow center
-                const distance = Math.hypot(touchX - currentX, touchY - currentY);
-                const browSize = (sizeValue / 100) * canvas.width * 0.3; // Approximate touch area
-
-                // Only start dragging if touch is near the unibrow
-                if (distance < browSize) {
-                    dragOffsetX = currentX - touchX;
-                    dragOffsetY = currentY - touchY;
-                    isDragging = true;
-                    e.preventDefault(); // Prevent scroll only when dragging
-                }
+                dragOffsetX = currentX - touchX;
+                dragOffsetY = currentY - touchY;
+                isDragging = true;
+                e.preventDefault(); // Prevent scroll when editing
             } else if (e.touches.length === 2) {
                 // Two fingers - start pinching and rotating
                 isDragging = false;
@@ -513,6 +525,8 @@
 
         // Touch move - for dragging and pinching
         canvas.addEventListener('touchmove', (e) => {
+            if (!isEditMode) return; // Only handle touches in edit mode
+
             if (e.touches.length === 1 && isDragging) {
                 // Single touch - dragging
                 e.preventDefault(); // Only prevent scroll when actively dragging
@@ -588,6 +602,8 @@
         let mouseDragOffsetY = 0;
 
         canvas.addEventListener('mousedown', (e) => {
+            if (!isEditMode) return; // Only handle mouse in edit mode
+
             const rect = canvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
@@ -602,6 +618,8 @@
         });
 
         canvas.addEventListener('mousemove', (e) => {
+            if (!isEditMode) return; // Only handle mouse in edit mode
+
             if (isMouseDown) {
                 const rect = canvas.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
