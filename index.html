@@ -246,8 +246,8 @@
             <div style="font-size: 2.5em; margin-bottom: 10px;">📸</div>
             <p style="margin-bottom: 15px; color: #666;">Take a selfie or upload a photo</p>
             <div class="button-group">
-                <button class="btn camera-btn" id="cameraBtn">📷 Take Photo</button>
-                <button class="btn" onclick="document.getElementById('fileInput').click()">🖼️ Upload Photo</button>
+                <button class="btn camera-btn" id="cameraBtn">Take Photo</button>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
             </div>
             <input type="file" id="fileInput" accept="image/*">
         </div>
@@ -257,7 +257,7 @@
                 👆 Tap "Edit" to adjust the unibrow. Drag to move, pinch to resize, twist to rotate. Tap "Done" when finished!
             </div>
 
-            <button class="btn camera-btn" id="editModeBtn" style="margin-bottom: 15px; width: 100%;">✏️ Edit Unibrow</button>
+            <button class="btn camera-btn" id="editModeBtn" style="margin-bottom: 15px; width: 100%;">Edit Unibrow</button>
 
             <div class="canvas-wrapper">
                 <canvas id="canvas"></canvas>
@@ -265,9 +265,9 @@
 
             <div class="controls">
                 <div class="button-row">
-                    <button class="btn download-btn" id="shareBtn">📤 Share</button>
-                    <button class="btn download-btn" id="downloadBtn">💾 Save</button>
-                    <button class="btn reset-btn" id="resetBtn">🔄 New</button>
+                    <button class="btn download-btn" id="shareBtn">Share</button>
+                    <button class="btn download-btn" id="downloadBtn">Save</button>
+                    <button class="btn reset-btn" id="resetBtn">New</button>
                 </div>
             </div>
         </div>
@@ -277,8 +277,8 @@
     <div class="camera-modal" id="cameraModal">
         <video id="video" autoplay playsinline></video>
         <div class="camera-controls">
-            <button class="btn" id="captureBtn">📸 Capture</button>
-            <button class="btn reset-btn" id="closeCameraBtn">✕ Close</button>
+            <button class="btn" id="captureBtn">Capture</button>
+            <button class="btn reset-btn" id="closeCameraBtn">Close</button>
         </div>
     </div>
 
@@ -326,11 +326,11 @@
         editModeBtn.addEventListener('click', () => {
             isEditMode = !isEditMode;
             if (isEditMode) {
-                editModeBtn.textContent = '✅ Done Editing';
+                editModeBtn.textContent = 'Done Editing';
                 editModeBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
                 canvas.style.cursor = 'move';
             } else {
-                editModeBtn.textContent = '✏️ Edit Unibrow';
+                editModeBtn.textContent = 'Edit Unibrow';
                 editModeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
                 canvas.style.cursor = 'default';
             }
