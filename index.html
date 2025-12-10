@@ -465,10 +465,22 @@
             }
         });
 
-        // Back carat - return to home screen
+        // Track current menu state
+        let currentMenu = 'yourpic'; // 'yourpic' or 'background'
+
+        // Back carat - return to home screen OR previous menu
         backCarat.addEventListener('click', () => {
-            editorScreen.classList.remove('active');
-            homeScreen.classList.remove('hidden');
+            if (currentMenu === 'background') {
+                // Go back to "Your pic" menu
+                menuTitle.textContent = 'Your pic';
+                menuButtons.style.display = 'flex';
+                thumbnailGrid.classList.remove('active');
+                currentMenu = 'yourpic';
+            } else {
+                // Go back to home screen
+                editorScreen.classList.remove('active');
+                homeScreen.classList.remove('hidden');
+            }
         });
 
         // Forward carat - switch to background selection
@@ -476,6 +488,7 @@
             menuTitle.textContent = 'Background';
             menuButtons.style.display = 'none';
             thumbnailGrid.classList.add('active');
+            currentMenu = 'background';
         });
     </script>
 </body>
