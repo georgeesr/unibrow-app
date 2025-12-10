@@ -102,14 +102,15 @@
         .save-btn {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 20px;
-            font-size: 0.9em;
+            border-radius: 15px;
+            font-size: 0.8em;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, opacity 0.2s;
             display: none;
+            width: 60px;
         }
 
         .save-btn.active {
@@ -167,6 +168,8 @@
             cursor: pointer;
             padding: 5px;
             font-weight: bold;
+            width: 30px;
+            text-align: center;
         }
 
         .menu-carat:last-child {
@@ -175,6 +178,15 @@
 
         .menu-carat:first-child {
             margin-left: -10px;
+        }
+
+        .menu-header > :first-child {
+            width: 60px;
+        }
+
+        .menu-header > :last-child {
+            width: 60px;
+            text-align: right;
         }
 
         .menu-buttons {
