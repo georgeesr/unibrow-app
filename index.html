@@ -294,12 +294,12 @@
                 <img src="new_images/background-6.jpg" class="thumbnail" alt="Background 6">
             </div>
             <div class="thumbnail-grid thumbnail-grid-frames" id="frameGrid">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 1">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 2">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 3">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 4">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 5">
-                <img src="new_images/placeholder-frame.png" class="thumbnail thumbnail-frame" alt="Frame 6">
+                <img src="new_images/frame-1.jpg" class="thumbnail thumbnail-frame" alt="Frame 1">
+                <img src="new_images/frame-2.jpg" class="thumbnail thumbnail-frame" alt="Frame 2">
+                <img src="new_images/frame-3.jpg" class="thumbnail thumbnail-frame" alt="Frame 3">
+                <img src="new_images/frame-4.jpg" class="thumbnail thumbnail-frame" alt="Frame 4">
+                <img src="new_images/frame-5.jpg" class="thumbnail thumbnail-frame" alt="Frame 5">
+                <img src="new_images/frame-6.jpg" class="thumbnail thumbnail-frame" alt="Frame 6">
             </div>
         </div>
     </div>
@@ -523,11 +523,24 @@
         });
 
         // Background thumbnail click - change editor background
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        thumbnails.forEach(thumbnail => {
+        const bgThumbnails = document.querySelectorAll('#thumbnailGrid .thumbnail');
+        bgThumbnails.forEach(thumbnail => {
             thumbnail.addEventListener('click', () => {
                 const bgImage = thumbnail.src;
                 editorScreen.style.backgroundImage = `url('${bgImage}')`;
+            });
+        });
+
+        // Frame thumbnail click - change frame layer on canvas
+        const frameThumbnails = document.querySelectorAll('#frameGrid .thumbnail-frame');
+        frameThumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                const frameImage = thumbnail.src;
+                frameLayer = new Image();
+                frameLayer.onload = () => {
+                    drawLayers();
+                };
+                frameLayer.src = frameImage;
             });
         });
     </script>
