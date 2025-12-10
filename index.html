@@ -81,8 +81,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            background: url('new_images/unibrow_background_rf.jpg') center center / cover no-repeat;
-            background-attachment: fixed;
+            background: #000000;
             overflow: hidden;
         }
 
@@ -94,14 +93,19 @@
             position: relative;
             width: 100%;
             max-width: 400px;
+            aspect-ratio: 4 / 5;
             margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 10px;
         }
 
         .preview-canvas {
-            width: 100%;
+            width: 75%;
             height: auto;
             display: block;
-            border-radius: 10px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
@@ -402,8 +406,9 @@
             <canvas id="previewCanvas" width="800" height="1000" class="preview-canvas"></canvas>
         </div>
         <div class="preview-buttons">
-            <button class="preview-btn" id="savePreviewBtn">Save</button>
+            <button class="preview-btn" id="savePreviewBtn">Download</button>
             <button class="preview-btn share-btn" id="sharePreviewBtn">Share</button>
+            <button class="preview-btn" id="editPreviewBtn">Edit</button>
         </div>
     </div>
 
@@ -438,6 +443,7 @@
         const previewScreen = document.getElementById('previewScreen');
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas.getContext('2d');
+        const editPreviewBtn = document.getElementById('editPreviewBtn');
         const savePreviewBtn = document.getElementById('savePreviewBtn');
         const sharePreviewBtn = document.getElementById('sharePreviewBtn');
         const unibrowGrid = document.createElement('div');
@@ -858,6 +864,12 @@
             // Hide editor, show preview
             editorScreen.classList.remove('active');
             previewScreen.classList.add('active');
+        });
+
+        // Edit button - return to editor from preview
+        editPreviewBtn.addEventListener('click', () => {
+            previewScreen.classList.remove('active');
+            editorScreen.classList.add('active');
         });
 
         // Save Preview button - download the image
