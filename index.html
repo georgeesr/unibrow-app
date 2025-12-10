@@ -162,6 +162,60 @@
             transform: scale(0.95);
             opacity: 0.8;
         }
+
+        /* Camera Modal */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        #video {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+            transform: scaleX(-1);
+        }
+
+        .camera-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .camera-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .camera-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
     </style>
 </head>
 <body>
@@ -188,16 +242,31 @@
         </div>
     </div>
 
+    <!-- Camera Modal -->
+    <div class="camera-modal" id="cameraModal">
+        <video id="video" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button class="camera-btn" id="captureBtn">Capture</button>
+            <button class="camera-btn close-btn" id="closeCameraBtn">Close</button>
+        </div>
+    </div>
+
     <script>
         const homeScreen = document.getElementById('homeScreen');
         const editorScreen = document.getElementById('editorScreen');
         const beginBtn = document.getElementById('beginBtn');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const takePicBtn = document.getElementById('takePicBtn');
+        const cameraModal = document.getElementById('cameraModal');
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const closeCameraBtn = document.getElementById('closeCameraBtn');
 
         // Layer images
         let photoLayer = null;
         let frameLayer = null;
+        let stream = null;
 
         // Load all layer images
         function loadLayers() {
@@ -267,6 +336,53 @@
             editorScreen.classList.add('active');
             loadLayers();
         });
+
+        // Take pic button - open camera
+        takePicBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+                });
+                video.srcObject = stream;
+                cameraModal.classList.add('active');
+            } catch (error) {
+                alert('Camera access denied or unavailable.');
+                console.error('Camera error:', error);
+            }
+        });
+
+        // Capture button - take photo from camera
+        captureBtn.addEventListener('click', () => {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = video.videoWidth;
+            tempCanvas.height = video.videoHeight;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            // Flip back to un-mirror since video preview is mirrored
+            tempCtx.translate(tempCanvas.width, 0);
+            tempCtx.scale(-1, 1);
+            tempCtx.drawImage(video, 0, 0);
+
+            // Convert to image and update photo layer
+            photoLayer = new Image();
+            photoLayer.onload = () => {
+                drawLayers();
+                closeCamera();
+            };
+            photoLayer.src = tempCanvas.toDataURL('image/jpeg', 0.95);
+        });
+
+        // Close camera button
+        closeCameraBtn.addEventListener('click', closeCamera);
+
+        // Close camera function
+        function closeCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraModal.classList.remove('active');
+        }
     </script>
 </body>
 </html>
