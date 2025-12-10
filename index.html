@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-title" content="Unibrow Maker">
     <link rel="apple-touch-icon" href="app-icon.png">
 
-    <title>Unibrow Maker - Frida Kahlo Style</title>
+    <title>Unibrow Maker</title>
     <style>
         * {
             margin: 0;
@@ -21,845 +21,251 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: url('frida.png') center center / cover no-repeat;
             min-height: 100vh;
+            background: url('new_images/unibrow_background_rf.jpg') center center / cover no-repeat;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        .home-screen {
+            text-align: center;
+            padding: 40px 20px;
+            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.3);
-            z-index: 0;
-        }
-
-        .container {
-            background: transparent;
-            border-radius: 20px;
-            padding: 20px;
-            max-width: 800px;
-            width: 100%;
-            margin: 10px 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 5px;
+            justify-content: center;
+            overflow: hidden;
         }
 
         .title-image {
             max-width: 400px;
-            width: 100%;
+            width: 90%;
             height: auto;
-            display: block;
-            margin: 0 auto;
+            margin-bottom: 40px;
         }
 
-        .subtitle {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-            font-style: italic;
-        }
-
-        .upload-area {
-            border: none;
-            border-radius: 10px;
-            padding: 30px 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        .button-group {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .upload-btn-icon {
-            width: 120px;
-            height: auto;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-        }
-
-        .upload-btn-icon:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        .btn {
+        .begin-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 16px 24px;
+            padding: 20px 60px;
             border: none;
             border-radius: 50px;
-            font-size: 1.1em;
-            cursor: pointer;
+            font-size: 1.5em;
             font-weight: 600;
-            transition: transform 0.2s;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn:active {
+        .begin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .begin-btn:active {
             transform: scale(0.95);
-        }
-
-        .camera-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        }
-
-        .editor-container {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .title-image.editing {
-            max-width: 150px;
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            display: inline-block;
-            max-width: 100%;
-        }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            display: block;
-            touch-action: pan-y;
-            cursor: move;
-        }
-
-        .icon-container {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            z-index: 10;
-        }
-
-        .action-icon {
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-        }
-
-        .action-icon:active {
-            transform: scale(0.9);
-            opacity: 0.8;
-        }
-
-        .action-icon img {
-            width: 31px;
-            height: auto;
-            display: block;
-        }
-
-        #newIcon img {
-            width: 39px;
-        }
-
-        .controls {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .control-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            border: none;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            background: #28a745;
-            flex: 1;
-        }
-
-        .reset-btn {
-            background: #dc3545;
-            flex: 1;
-        }
-
-        .instructions {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1em;
-            color: white;
-            text-align: center;
-            z-index: 20;
-            line-height: 1.8;
-            cursor: pointer;
-            border-radius: 10px;
-        }
-
-        .instructions.hidden {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            h1 {
-                font-size: 2.5em;
-            }
-            .button-group {
-                flex-direction: row;
-            }
         }
 
         .hidden {
             display: none;
         }
 
-        /* Camera modal */
-        .camera-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            flex-direction: column;
+        /* Editor Screen */
+        .editor-screen {
+            display: none !important;
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 200px;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            background: url('new_images/placeholder-background.jpg') center center / cover no-repeat;
+            background-attachment: fixed;
         }
 
-        .camera-modal.active {
-            display: flex;
+        .editor-screen.active {
+            display: flex !important;
         }
 
-        #video {
-            max-width: 100%;
-            max-height: 70vh;
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
             border-radius: 10px;
-            transform: scaleX(-1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        .camera-controls {
-            margin-top: 20px;
+        /* Bottom Menu */
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #666666;
+            border-radius: 15px 15px 0 0;
+            padding: 20px 20px 0 20px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-header {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            margin-top: -15px;
         }
 
-        .value-display {
-            display: inline-block;
-            min-width: 40px;
-            text-align: right;
-            color: #666;
-            font-weight: normal;
+        .menu-title {
+            color: white;
+            font-size: 0.9em;
+            flex: 1;
+            text-align: center;
+        }
+
+        .menu-carat {
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+            font-weight: bold;
+            margin-right: -10px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .menu-btn {
+            flex: 1;
+            background: white;
+            color: #666666;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1><img src="unibrow_title.png" alt="Unibrow Generator" class="title-image"></h1>
-
-        <div class="upload-area" id="uploadArea">
-            <div class="button-group">
-                <img src="take.svg" alt="Take Photo" class="upload-btn-icon" id="cameraBtn">
-                <img src="upload.svg" alt="Upload Photo" class="upload-btn-icon" id="uploadBtn">
-            </div>
-            <input type="file" id="fileInput" accept="image/*">
-        </div>
-
-        <div class="editor-container" id="editorContainer">
-            <div class="canvas-wrapper">
-                <canvas id="canvas"></canvas>
-                <div class="instructions" id="instructions">
-                    <div>
-                        Drag to move.<br>
-                        Pinch to resize.<br>
-                        Twist to rotate.<br>
-                        Tap "Done" when finished.<br>
-                        <br>
-                        <strong>Tap the screen to begin editing.</strong>
-                    </div>
-                </div>
-                <div class="icon-container">
-                    <div class="action-icon" id="shareIcon">
-                        <img src="share.svg" alt="Share">
-                    </div>
-                    <div class="action-icon" id="saveIcon">
-                        <img src="save.svg" alt="Save">
-                    </div>
-                    <div class="action-icon" id="newIcon">
-                        <img src="new.svg" alt="New">
-                    </div>
-                </div>
-                <div class="action-icon" id="loveIcon" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: none; z-index: 10; width: 80px; cursor: pointer;">
-                    <img src="love.svg" alt="Done" style="width: 100%; height: auto;">
-                </div>
-                <div class="action-icon" id="editIcon" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: none; z-index: 10; width: 80px; cursor: pointer;">
-                    <img src="edit.svg" alt="Edit" style="width: 100%; height: auto;">
-                </div>
-            </div>
-
-        </div>
+    <div class="home-screen" id="homeScreen">
+        <img src="new_images/unibrow_title.png" alt="Unibrow Generator" class="title-image">
+        <button class="begin-btn" id="beginBtn">Begin</button>
     </div>
 
-    <!-- Camera Modal -->
-    <div class="camera-modal" id="cameraModal">
-        <video id="video" autoplay playsinline></video>
-        <div class="camera-controls">
-            <button class="btn" id="captureBtn">Capture</button>
-            <button class="btn reset-btn" id="closeCameraBtn">Close</button>
+    <div class="editor-screen" id="editorScreen">
+        <div class="canvas-container">
+            <canvas id="canvas" width="800" height="1000"></canvas>
+        </div>
+
+        <div class="bottom-menu" id="bottomMenu">
+            <div class="menu-header">
+                <div style="width: 30px;"></div>
+                <div class="menu-title">Your pic</div>
+                <div class="menu-carat">›</div>
+            </div>
+            <div class="menu-buttons">
+                <button class="menu-btn" id="takePicBtn">Take pic</button>
+                <button class="menu-btn" id="uploadPicBtn">Upload pic</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const fileInput = document.getElementById('fileInput');
-        const uploadArea = document.getElementById('uploadArea');
-        const editorContainer = document.getElementById('editorContainer');
+        const homeScreen = document.getElementById('homeScreen');
+        const editorScreen = document.getElementById('editorScreen');
+        const beginBtn = document.getElementById('beginBtn');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const cameraBtn = document.getElementById('cameraBtn');
-        const cameraModal = document.getElementById('cameraModal');
-        const video = document.getElementById('video');
-        const captureBtn = document.getElementById('captureBtn');
-        const closeCameraBtn = document.getElementById('closeCameraBtn');
-        const saveIcon = document.getElementById('saveIcon');
-        const shareIcon = document.getElementById('shareIcon');
-        const newIcon = document.getElementById('newIcon');
-        const instructions = document.getElementById('instructions');
-        const loveIcon = document.getElementById('loveIcon');
-        const editIcon = document.getElementById('editIcon');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const titleImage = document.querySelector('.title-image');
 
-        // Hidden control values (no UI sliders, just internal state)
-        let verticalPositionValue = 25;
-        let horizontalPositionValue = 50;
-        let sizeValue = 50;
-        let rotationValue = 0;
-        let opacityValue = 100;
+        // Layer images
+        let photoLayer = null;
+        let frameLayer = null;
 
-        let currentImage = null;
-        let unibrowImage = null;
-        let stream = null;
-        let isEditMode = false;
+        // Load all layer images
+        function loadLayers() {
+            // Load placeholder photo
+            photoLayer = new Image();
+            photoLayer.src = 'new_images/placeholder_pic.jpg';
 
-        // Load the unibrow image
-        const loadUnibrowImage = () => {
-            unibrowImage = new Image();
-            unibrowImage.src = 'unibrow.png'; // Must be in same folder as HTML file
-            unibrowImage.onerror = () => {
-                alert('Could not load unibrow.png. Make sure it is in the same folder as this HTML file.');
-            };
-        };
+            // Load frame
+            frameLayer = new Image();
+            frameLayer.src = 'new_images/frame-1.png';
 
-        // Load unibrow on page load
-        loadUnibrowImage();
+            // Wait for all images to load, then draw
+            let loadedCount = 0;
+            const totalImages = 2;
 
-        // Start editing when instructions overlay is tapped
-        instructions.addEventListener('click', () => {
-            if (!isEditMode) {
-                instructions.classList.add('hidden');
-                isEditMode = true;
-                canvas.style.cursor = 'move';
-                loveIcon.style.display = 'block';
+            function checkAllLoaded() {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                    drawLayers();
+                }
             }
-        });
 
-        // Click love icon to lock unibrow (done editing) - shows edit icon
-        loveIcon.addEventListener('click', () => {
-            isEditMode = false;
-            canvas.style.cursor = 'default';
-            loveIcon.style.display = 'none';
-            editIcon.style.display = 'block';
-        });
-
-        // Click edit icon to unlock unibrow (edit mode) - shows love icon
-        editIcon.addEventListener('click', () => {
-            isEditMode = true;
-            canvas.style.cursor = 'move';
-            editIcon.style.display = 'none';
-            loveIcon.style.display = 'block';
-        });
-
-        // Upload button click
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // File upload
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) loadImage(file);
-        });
-
-        // Camera
-        cameraBtn.addEventListener('click', async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
-                });
-                video.srcObject = stream;
-                cameraModal.classList.add('active');
-            } catch (error) {
-                alert('Camera access denied or unavailable.');
-            }
-        });
-
-        captureBtn.addEventListener('click', () => {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
-            const tempCtx = tempCanvas.getContext('2d');
-
-            // Flip back to un-mirror since video preview is mirrored
-            tempCtx.translate(tempCanvas.width, 0);
-            tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0);
-
-            tempCanvas.toBlob((blob) => {
-                loadImage(blob);
-                closeCamera();
-            }, 'image/jpeg', 0.95);
-        });
-
-        closeCameraBtn.addEventListener('click', closeCamera);
-
-        function closeCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            cameraModal.classList.remove('active');
+            photoLayer.onload = checkAllLoaded;
+            frameLayer.onload = checkAllLoaded;
         }
 
-        // Share
-        shareIcon.addEventListener('click', async () => {
-            try {
-                // Convert canvas to blob
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
-
-                    // Check if Web Share API is supported
-                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'My Frida Kahlo Unibrow',
-                                text: 'Check out my unibrow! 🎨'
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
-                                console.error('Share failed:', err);
-                                alert('Could not share. Try downloading instead!');
-                            }
-                        }
-                    } else {
-                        // Fallback to download if sharing not supported
-                        alert('Sharing not supported on this device. Image will be downloaded instead!');
-                        const link = document.createElement('a');
-                        link.download = 'my-unibrow.png';
-                        link.href = canvas.toDataURL('image/png');
-                        link.click();
-                    }
-                }, 'image/png');
-            } catch (err) {
-                console.error('Error creating share:', err);
-                alert('Could not share. Try downloading instead!');
-            }
-        });
-
-        // Save/Download
-        saveIcon.addEventListener('click', async () => {
-            try {
-                // On iOS, use share API to save to Photos
-                if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                    canvas.toBlob(async (blob) => {
-                        const filesArray = [new File([blob], 'my-unibrow.png', { type: 'image/png' })];
-
-                        try {
-                            await navigator.share({
-                                files: filesArray
-                            });
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
-                                console.error('Save failed:', err);
-                            }
-                        }
-                    }, 'image/png');
-                } else {
-                    // Desktop/Android: direct download
-                    const link = document.createElement('a');
-                    link.download = 'my-unibrow.png';
-                    link.href = canvas.toDataURL('image/png');
-                    link.style.display = 'none';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            } catch (err) {
-                console.error('Error saving:', err);
-            }
-        });
-
-        // Reset/New
-        newIcon.addEventListener('click', () => {
-            uploadArea.style.display = 'block';
-            editorContainer.style.display = 'none';
-            titleImage.classList.remove('editing');
-            currentImage = null;
-            fileInput.value = '';
-        });
-
-        function loadImage(source) {
-            const img = new Image();
-            img.onload = () => {
-                currentImage = img;
-
-                // Set canvas size
-                const maxWidth = 800;
-                let width = img.width;
-                let height = img.height;
-
-                if (width > maxWidth) {
-                    height = (height * maxWidth) / width;
-                    width = maxWidth;
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-
-                // Show editor
-                uploadArea.style.display = 'none';
-                editorContainer.style.display = 'block';
-                titleImage.classList.add('editing');
-
-                // Reset to defaults
-                verticalPositionValue = 25;
-                horizontalPositionValue = 50;
-                sizeValue = 50;
-                rotationValue = 0;
-                opacityValue = 100;
-                isEditMode = false;
-                canvas.style.cursor = 'default';
-
-                // Show instructions overlay and hide edit icons
-                if (instructions) {
-                    instructions.classList.remove('hidden');
-                }
-                loveIcon.style.display = 'none';
-                editIcon.style.display = 'none';
-
-                drawUnibrow();
-            };
-
-            if (source instanceof Blob) {
-                img.src = URL.createObjectURL(source);
-            } else {
-                img.src = URL.createObjectURL(source);
-            }
-        }
-
-        function drawUnibrow() {
-            if (!currentImage || !unibrowImage || !unibrowImage.complete) return;
-
-            // Clear and redraw image
+        // Draw all layers on canvas
+        function drawLayers() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
 
-            // Get values
-            const yPos = (verticalPositionValue / 100) * canvas.height;
-            const xPos = (horizontalPositionValue / 100) * canvas.width;
-            const scale = sizeValue / 100;
-            const angle = (rotationValue * Math.PI) / 180;
-            const alpha = opacityValue / 100;
+            // Draw photo layer (aspect-fill)
+            drawImageCover(ctx, photoLayer, 0, 0, canvas.width, canvas.height);
 
-            // Calculate scaled dimensions
-            const browWidth = unibrowImage.width * scale * (canvas.width / 800);
-            const browHeight = unibrowImage.height * scale * (canvas.width / 800);
-
-            // Save context state
-            ctx.save();
-
-            // Set opacity
-            ctx.globalAlpha = alpha;
-
-            // Move to position and rotate
-            ctx.translate(xPos, yPos);
-            ctx.rotate(angle);
-
-            // Draw unibrow centered at position
-            ctx.drawImage(
-                unibrowImage,
-                -browWidth / 2,
-                -browHeight / 2,
-                browWidth,
-                browHeight
-            );
-
-            // Restore context state
-            ctx.restore();
+            // Draw frame layer on top (aspect-fill)
+            drawImageCover(ctx, frameLayer, 0, 0, canvas.width, canvas.height);
         }
 
-        // Touch and drag variables
-        let isDragging = false;
-        let dragOffsetX = 0;
-        let dragOffsetY = 0;
-        let initialPinchDistance = 0;
-        let initialSize = 50;
-        let initialRotationAngle = 0;
-        let initialRotation = 0;
+        // Helper function to draw image with aspect-fill (cover)
+        function drawImageCover(ctx, image, x, y, width, height) {
+            if (!image || !image.complete) return;
 
-        // Touch start - for dragging
-        canvas.addEventListener('touchstart', (e) => {
-            if (!isEditMode) return; // Only handle touches in edit mode
+            const imgAspect = image.width / image.height;
+            const canvasAspect = width / height;
 
-            if (e.touches.length === 1) {
-                // Single touch - start dragging
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const touchX = touch.clientX - rect.left;
-                const touchY = touch.clientY - rect.top;
+            let drawWidth, drawHeight, offsetX, offsetY;
 
-                // Get current unibrow position
-                const currentX = (horizontalPositionValue / 100) * canvas.width;
-                const currentY = (verticalPositionValue / 100) * canvas.height;
-
-                dragOffsetX = currentX - touchX;
-                dragOffsetY = currentY - touchY;
-                isDragging = true;
-                e.preventDefault(); // Prevent scroll when editing
-            } else if (e.touches.length === 2) {
-                // Two fingers - start pinching and rotating
-                isDragging = false;
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-
-                // Store initial distance for pinch
-                initialPinchDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                initialSize = sizeValue;
-
-                // Store initial angle for rotation
-                initialRotationAngle = Math.atan2(
-                    touch2.clientY - touch1.clientY,
-                    touch2.clientX - touch1.clientX
-                ) * (180 / Math.PI);
-                initialRotation = rotationValue;
-
-                e.preventDefault(); // Prevent scroll during multi-touch
+            if (imgAspect > canvasAspect) {
+                // Image is wider - fit to height
+                drawHeight = height;
+                drawWidth = image.width * (height / image.height);
+                offsetX = (width - drawWidth) / 2;
+                offsetY = 0;
+            } else {
+                // Image is taller - fit to width
+                drawWidth = width;
+                drawHeight = image.height * (width / image.width);
+                offsetX = 0;
+                offsetY = (height - drawHeight) / 2;
             }
-        });
 
-        // Touch move - for dragging and pinching
-        canvas.addEventListener('touchmove', (e) => {
-            if (!isEditMode) return; // Only handle touches in edit mode
+            ctx.drawImage(image, x + offsetX, y + offsetY, drawWidth, drawHeight);
+        }
 
-            if (e.touches.length === 1 && isDragging) {
-                // Single touch - dragging
-                e.preventDefault(); // Only prevent scroll when actively dragging
-
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const touchX = touch.clientX - rect.left;
-                const touchY = touch.clientY - rect.top;
-
-                // Calculate new position by adding the offset
-                const newX = touchX + dragOffsetX;
-                const newY = touchY + dragOffsetY;
-
-                // Convert to percentage
-                const newHorizontal = (newX / canvas.width) * 100;
-                const newVertical = (newY / canvas.height) * 100;
-
-                // Update position with clamping
-                horizontalPositionValue = Math.max(0, Math.min(100, newHorizontal));
-                verticalPositionValue = Math.max(0, Math.min(100, newVertical));
-
-                drawUnibrow();
-            } else if (e.touches.length === 2) {
-                e.preventDefault(); // Prevent scroll during multi-touch
-                // Two fingers - pinching and rotating
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-
-                // Calculate scale change for pinch
-                const currentDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                const scaleChange = currentDistance / initialPinchDistance;
-                let newSize = initialSize * scaleChange;
-
-                // Clamp size between min and max
-                newSize = Math.max(20, Math.min(100, newSize));
-                sizeValue = newSize;
-
-                // Calculate rotation change
-                const currentAngle = Math.atan2(
-                    touch2.clientY - touch1.clientY,
-                    touch2.clientX - touch1.clientX
-                ) * (180 / Math.PI);
-
-                let angleDiff = currentAngle - initialRotationAngle;
-
-                // Normalize angle difference to -180 to 180
-                while (angleDiff > 180) angleDiff -= 360;
-                while (angleDiff < -180) angleDiff += 360;
-
-                let newRotation = initialRotation + angleDiff;
-
-                // Clamp rotation between min and max
-                newRotation = Math.max(-90, Math.min(90, newRotation));
-                rotationValue = newRotation;
-
-                drawUnibrow();
-            }
-        });
-
-        // Touch end
-        canvas.addEventListener('touchend', (e) => {
-            if (e.touches.length === 0) {
-                isDragging = false;
-            }
-        });
-
-        // Mouse support for desktop
-        let isMouseDown = false;
-        let mouseDragOffsetX = 0;
-        let mouseDragOffsetY = 0;
-
-        canvas.addEventListener('mousedown', (e) => {
-            if (!isEditMode) return; // Only handle mouse in edit mode
-
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            // Store the offset from current unibrow position to mouse point
-            const currentX = (horizontalPositionValue / 100) * canvas.width;
-            const currentY = (verticalPositionValue / 100) * canvas.height;
-
-            mouseDragOffsetX = currentX - mouseX;
-            mouseDragOffsetY = currentY - mouseY;
-            isMouseDown = true;
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isEditMode) return; // Only handle mouse in edit mode
-
-            if (isMouseDown) {
-                const rect = canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                // Calculate new position by adding the offset
-                const newX = mouseX + mouseDragOffsetX;
-                const newY = mouseY + mouseDragOffsetY;
-
-                const newHorizontal = (newX / canvas.width) * 100;
-                const newVertical = (newY / canvas.height) * 100;
-
-                horizontalPositionValue = Math.max(0, Math.min(100, newHorizontal));
-                verticalPositionValue = Math.max(0, Math.min(100, newVertical));
-
-                drawUnibrow();
-            }
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            isMouseDown = false;
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            isMouseDown = false;
-        });
-
-        // Drag and drop for photo upload
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '#f0f4ff';
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.background = '';
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.background = '';
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) {
-                loadImage(file);
-            }
+        // Begin button - go to editor
+        beginBtn.addEventListener('click', () => {
+            homeScreen.classList.add('hidden');
+            editorScreen.classList.add('active');
+            loadLayers();
         });
     </script>
 </body>
