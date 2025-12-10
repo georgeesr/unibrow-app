@@ -170,6 +170,33 @@
             opacity: 0.8;
         }
 
+        /* Thumbnail Grid */
+        .thumbnail-grid {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .thumbnail-grid.active {
+            display: grid;
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .thumbnail:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
         /* Camera Modal */
         .camera-modal {
             display: none;
@@ -239,12 +266,20 @@
         <div class="bottom-menu" id="bottomMenu">
             <div class="menu-header">
                 <div class="menu-carat" id="backCarat">‹</div>
-                <div class="menu-title">Your pic</div>
-                <div class="menu-carat">›</div>
+                <div class="menu-title" id="menuTitle">Your pic</div>
+                <div class="menu-carat" id="forwardCarat">›</div>
             </div>
-            <div class="menu-buttons">
+            <div class="menu-buttons" id="menuButtons">
                 <button class="menu-btn" id="takePicBtn">Take pic</button>
                 <button class="menu-btn" id="uploadPicBtn">Upload pic</button>
+            </div>
+            <div class="thumbnail-grid" id="thumbnailGrid">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 1">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 2">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 3">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 4">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 5">
+                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 6">
             </div>
         </div>
     </div>
@@ -271,6 +306,10 @@
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const uploadPicBtn = document.getElementById('uploadPicBtn');
         const backCarat = document.getElementById('backCarat');
+        const forwardCarat = document.getElementById('forwardCarat');
+        const menuTitle = document.getElementById('menuTitle');
+        const menuButtons = document.getElementById('menuButtons');
+        const thumbnailGrid = document.getElementById('thumbnailGrid');
 
         // Layer images
         let photoLayer = null;
@@ -425,6 +464,13 @@
         backCarat.addEventListener('click', () => {
             editorScreen.classList.remove('active');
             homeScreen.classList.remove('hidden');
+        });
+
+        // Forward carat - switch to background selection
+        forwardCarat.addEventListener('click', () => {
+            menuTitle.textContent = 'Background';
+            menuButtons.style.display = 'none';
+            thumbnailGrid.classList.add('active');
         });
     </script>
 </body>
