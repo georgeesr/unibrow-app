@@ -491,6 +491,15 @@
             thumbnailGrid.classList.add('active');
             currentMenu = 'background';
         });
+
+        // Background thumbnail click - change editor background
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                const bgImage = thumbnail.src;
+                editorScreen.style.backgroundImage = `url('${bgImage}')`;
+            });
+        });
     </script>
 </body>
 </html>
