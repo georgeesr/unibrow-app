@@ -203,6 +203,12 @@
             opacity: 0.8;
         }
 
+        .thumbnail-frame {
+            background: transparent;
+            object-fit: contain;
+            padding: 5px;
+        }
+
         /* Camera Modal */
         .camera-modal {
             display: none;
@@ -287,6 +293,14 @@
                 <img src="new_images/background-5.jpg" class="thumbnail" alt="Background 5">
                 <img src="new_images/background-6.jpg" class="thumbnail" alt="Background 6">
             </div>
+            <div class="thumbnail-grid thumbnail-grid-frames" id="frameGrid">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 1">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 2">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 3">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 4">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 5">
+                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 6">
+            </div>
         </div>
     </div>
 
@@ -316,6 +330,7 @@
         const menuTitle = document.getElementById('menuTitle');
         const menuButtons = document.getElementById('menuButtons');
         const thumbnailGrid = document.getElementById('thumbnailGrid');
+        const frameGrid = document.getElementById('frameGrid');
 
         // Layer images
         let photoLayer = null;
@@ -467,11 +482,17 @@
         });
 
         // Track current menu state
-        let currentMenu = 'yourpic'; // 'yourpic' or 'background'
+        let currentMenu = 'yourpic'; // 'yourpic', 'background', or 'frame'
 
         // Back carat - return to home screen OR previous menu
         backCarat.addEventListener('click', () => {
-            if (currentMenu === 'background') {
+            if (currentMenu === 'frame') {
+                // Go back to "Background" menu
+                menuTitle.textContent = 'Background';
+                frameGrid.classList.remove('active');
+                thumbnailGrid.classList.add('active');
+                currentMenu = 'background';
+            } else if (currentMenu === 'background') {
                 // Go back to "Your pic" menu
                 menuTitle.textContent = 'Your pic';
                 menuButtons.style.display = 'flex';
@@ -484,12 +505,21 @@
             }
         });
 
-        // Forward carat - switch to background selection
+        // Forward carat - switch to next menu
         forwardCarat.addEventListener('click', () => {
-            menuTitle.textContent = 'Background';
-            menuButtons.style.display = 'none';
-            thumbnailGrid.classList.add('active');
-            currentMenu = 'background';
+            if (currentMenu === 'yourpic') {
+                // Go to Background menu
+                menuTitle.textContent = 'Background';
+                menuButtons.style.display = 'none';
+                thumbnailGrid.classList.add('active');
+                currentMenu = 'background';
+            } else if (currentMenu === 'background') {
+                // Go to Frame menu
+                menuTitle.textContent = 'Frame';
+                thumbnailGrid.classList.remove('active');
+                frameGrid.classList.add('active');
+                currentMenu = 'frame';
+            }
         });
 
         // Background thumbnail click - change editor background
