@@ -406,7 +406,6 @@
             <canvas id="previewCanvas" width="800" height="1000" class="preview-canvas"></canvas>
         </div>
         <div class="preview-buttons">
-            <button class="preview-btn" id="savePreviewBtn">Download</button>
             <button class="preview-btn share-btn" id="sharePreviewBtn">Share</button>
             <button class="preview-btn" id="editPreviewBtn">Edit</button>
         </div>
@@ -444,7 +443,6 @@
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas.getContext('2d');
         const editPreviewBtn = document.getElementById('editPreviewBtn');
-        const savePreviewBtn = document.getElementById('savePreviewBtn');
         const sharePreviewBtn = document.getElementById('sharePreviewBtn');
         const unibrowGrid = document.createElement('div');
         unibrowGrid.id = 'unibrowGrid';
@@ -870,14 +868,6 @@
         editPreviewBtn.addEventListener('click', () => {
             previewScreen.classList.remove('active');
             editorScreen.classList.add('active');
-        });
-
-        // Save Preview button - download the image
-        savePreviewBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.download = 'my-unibrow.png';
-            link.href = previewCanvas.toDataURL('image/png');
-            link.click();
         });
 
         // Share Preview button - share the image
