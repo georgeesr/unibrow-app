@@ -75,15 +75,14 @@
         /* Editor Screen */
         .editor-screen {
             display: none !important;
-            min-height: 100vh;
+            height: 100vh;
             padding: 20px;
-            padding-top: 40px;
-            padding-bottom: 300px;
-            align-items: center;
-            justify-content: flex-start;
+            padding-bottom: 0;
+            align-items: flex-start;
+            justify-content: center;
             background: url('new_images/placeholder-background.jpg') center center / cover no-repeat;
             background-attachment: fixed;
-            overflow-y: auto;
+            overflow: hidden;
         }
 
         .editor-screen.active {
@@ -93,12 +92,14 @@
         .canvas-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin-bottom: 20px;
+            max-width: 600px;
+            margin-top: 20px;
+            flex-shrink: 1;
         }
 
         canvas {
             width: 100%;
+            max-height: calc(100vh - 280px);
             height: auto;
             display: block;
             border-radius: 10px;
