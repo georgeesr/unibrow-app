@@ -102,7 +102,7 @@
         .save-btn {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border: none;
             border-radius: 15px;
             font-size: 0.8em;
@@ -110,11 +110,10 @@
             cursor: pointer;
             transition: transform 0.2s, opacity 0.2s;
             display: none;
-            text-align: center;
         }
 
         .save-btn.active {
-            display: block;
+            display: inline-block;
         }
 
         .save-btn:active {
@@ -180,16 +179,13 @@
             margin-left: -10px;
         }
 
-        .menu-header > :first-child {
-            min-width: 60px;
-            display: flex;
-            justify-content: flex-start;
+        .menu-header > .menu-carat:first-child {
+            width: 30px;
         }
 
-        .menu-header > :last-child {
-            min-width: 60px;
-            display: flex;
-            justify-content: flex-end;
+        .menu-header > .menu-carat:last-child,
+        .menu-header > .save-btn {
+            margin-right: -10px;
         }
 
         .menu-buttons {
