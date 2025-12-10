@@ -100,21 +100,16 @@
         }
 
         .save-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 25px;
-            font-size: 1em;
+            border-radius: 20px;
+            font-size: 0.9em;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s, opacity 0.2s;
             display: none;
-            z-index: 100;
         }
 
         .save-btn.active {
@@ -124,6 +119,10 @@
         .save-btn:active {
             transform: scale(0.95);
             opacity: 0.8;
+        }
+
+        .menu-carat.hidden {
+            display: none;
         }
 
         canvas {
@@ -300,7 +299,6 @@
     <div class="editor-screen" id="editorScreen">
         <div class="canvas-container">
             <canvas id="canvas" width="800" height="1000"></canvas>
-            <button class="save-btn" id="saveBtn">Save</button>
         </div>
 
         <div class="bottom-menu" id="bottomMenu">
@@ -308,6 +306,7 @@
                 <div class="menu-carat" id="backCarat">‹</div>
                 <div class="menu-title" id="menuTitle">Your pic</div>
                 <div class="menu-carat" id="forwardCarat">›</div>
+                <button class="save-btn" id="saveBtn">Save</button>
             </div>
             <div class="menu-buttons" id="menuButtons">
                 <button class="menu-btn" id="takePicBtn">Take pic</button>
@@ -559,6 +558,7 @@
                 menuTitle.textContent = 'Frame';
                 unibrowGrid.classList.remove('active');
                 frameGrid.classList.add('active');
+                forwardCarat.classList.remove('hidden');
                 saveBtn.classList.remove('active');
                 currentMenu = 'frame';
             } else if (currentMenu === 'frame') {
@@ -599,6 +599,7 @@
                 menuTitle.textContent = 'Unibrow';
                 frameGrid.classList.remove('active');
                 unibrowGrid.classList.add('active');
+                forwardCarat.classList.add('hidden');
                 saveBtn.classList.add('active');
                 currentMenu = 'unibrow';
             }
