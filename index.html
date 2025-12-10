@@ -136,7 +136,14 @@
             cursor: pointer;
             padding: 5px;
             font-weight: bold;
+        }
+
+        .menu-carat:last-child {
             margin-right: -10px;
+        }
+
+        .menu-carat:first-child {
+            margin-left: -10px;
         }
 
         .menu-buttons {
@@ -231,7 +238,7 @@
 
         <div class="bottom-menu" id="bottomMenu">
             <div class="menu-header">
-                <div style="width: 30px;"></div>
+                <div class="menu-carat" id="backCarat">‹</div>
                 <div class="menu-title">Your pic</div>
                 <div class="menu-carat">›</div>
             </div>
@@ -263,6 +270,7 @@
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
         const uploadPicBtn = document.getElementById('uploadPicBtn');
+        const backCarat = document.getElementById('backCarat');
 
         // Layer images
         let photoLayer = null;
@@ -411,6 +419,12 @@
                 };
                 reader.readAsDataURL(file);
             }
+        });
+
+        // Back carat - return to home screen
+        backCarat.addEventListener('click', () => {
+            editorScreen.classList.remove('active');
+            homeScreen.classList.remove('hidden');
         });
     </script>
 </body>
