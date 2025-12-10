@@ -110,6 +110,7 @@
             cursor: pointer;
             transition: transform 0.2s, opacity 0.2s;
             display: none;
+            text-align: center;
         }
 
         .save-btn.active {
@@ -180,12 +181,15 @@
         }
 
         .menu-header > :first-child {
-            width: 60px;
+            min-width: 60px;
+            display: flex;
+            justify-content: flex-start;
         }
 
         .menu-header > :last-child {
-            width: 60px;
-            text-align: right;
+            min-width: 60px;
+            display: flex;
+            justify-content: flex-end;
         }
 
         .menu-buttons {
