@@ -634,18 +634,25 @@
         unibrowThumbnails.forEach(thumbnail => {
             thumbnail.addEventListener('click', () => {
                 const unibrowImage = thumbnail.src;
-                unibrowLayer = new Image();
-                unibrowLayer.onload = () => {
-                    // Center the unibrow initially
-                    unibrowWidth = 300;
-                    unibrowHeight = (unibrowLayer.height / unibrowLayer.width) * unibrowWidth;
-                    unibrowX = (canvas.width - unibrowWidth) / 2;
-                    unibrowY = (canvas.height - unibrowHeight) / 2;
-                    unibrowRotation = 0;
-                    unibrowScale = 1;
+                const newUnibrow = new Image();
+                newUnibrow.onload = () => {
+                    // If no unibrow exists yet, center it initially
+                    if (!unibrowLayer) {
+                        unibrowWidth = 300;
+                        unibrowHeight = (newUnibrow.height / newUnibrow.width) * unibrowWidth;
+                        unibrowX = (canvas.width - unibrowWidth) / 2;
+                        unibrowY = (canvas.height - unibrowHeight) / 2;
+                        unibrowRotation = 0;
+                        unibrowScale = 1;
+                    } else {
+                        // Keep current position, scale, rotation - just update dimensions
+                        unibrowWidth = 300;
+                        unibrowHeight = (newUnibrow.height / newUnibrow.width) * unibrowWidth;
+                    }
+                    unibrowLayer = newUnibrow;
                     drawLayers();
                 };
-                unibrowLayer.src = unibrowImage;
+                newUnibrow.src = unibrowImage;
             });
         });
 
