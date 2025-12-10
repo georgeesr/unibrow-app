@@ -331,6 +331,10 @@
         const menuButtons = document.getElementById('menuButtons');
         const thumbnailGrid = document.getElementById('thumbnailGrid');
         const frameGrid = document.getElementById('frameGrid');
+        const unibrowGrid = document.createElement('div');
+        unibrowGrid.id = 'unibrowGrid';
+        unibrowGrid.className = 'thumbnail-grid';
+        document.getElementById('bottomMenu').appendChild(unibrowGrid);
 
         // Layer images
         let photoLayer = null;
@@ -482,11 +486,17 @@
         });
 
         // Track current menu state
-        let currentMenu = 'yourpic'; // 'yourpic', 'background', or 'frame'
+        let currentMenu = 'yourpic'; // 'yourpic', 'background', 'frame', or 'unibrow'
 
         // Back carat - return to home screen OR previous menu
         backCarat.addEventListener('click', () => {
-            if (currentMenu === 'frame') {
+            if (currentMenu === 'unibrow') {
+                // Go back to "Frame" menu
+                menuTitle.textContent = 'Frame';
+                unibrowGrid.classList.remove('active');
+                frameGrid.classList.add('active');
+                currentMenu = 'frame';
+            } else if (currentMenu === 'frame') {
                 // Go back to "Background" menu
                 menuTitle.textContent = 'Background';
                 frameGrid.classList.remove('active');
@@ -519,6 +529,12 @@
                 thumbnailGrid.classList.remove('active');
                 frameGrid.classList.add('active');
                 currentMenu = 'frame';
+            } else if (currentMenu === 'frame') {
+                // Go to Unibrow menu
+                menuTitle.textContent = 'Unibrow';
+                frameGrid.classList.remove('active');
+                unibrowGrid.classList.add('active');
+                currentMenu = 'unibrow';
             }
         });
 
