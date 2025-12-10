@@ -350,6 +350,12 @@
         let unibrowLayer = null;
         let stream = null;
 
+        // Unibrow position and transform
+        let unibrowX = 0;
+        let unibrowY = 0;
+        let unibrowWidth = 300;
+        let unibrowHeight = 0;
+
         // Create hidden file input for upload
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
@@ -389,13 +395,9 @@
             // Draw photo layer (aspect-fill)
             drawImageCover(ctx, photoLayer, 0, 0, canvas.width, canvas.height);
 
-            // Draw unibrow layer (if exists) - centered
+            // Draw unibrow layer (if exists)
             if (unibrowLayer && unibrowLayer.complete) {
-                const unibrowWidth = 300; // Default width
-                const unibrowHeight = (unibrowLayer.height / unibrowLayer.width) * unibrowWidth;
-                const x = (canvas.width - unibrowWidth) / 2;
-                const y = (canvas.height - unibrowHeight) / 2;
-                ctx.drawImage(unibrowLayer, x, y, unibrowWidth, unibrowHeight);
+                ctx.drawImage(unibrowLayer, unibrowX, unibrowY, unibrowWidth, unibrowHeight);
             }
 
             // Draw frame layer on top (aspect-fill)
@@ -585,10 +587,68 @@
                 const unibrowImage = thumbnail.src;
                 unibrowLayer = new Image();
                 unibrowLayer.onload = () => {
+                    // Center the unibrow initially
+                    unibrowWidth = 300;
+                    unibrowHeight = (unibrowLayer.height / unibrowLayer.width) * unibrowWidth;
+                    unibrowX = (canvas.width - unibrowWidth) / 2;
+                    unibrowY = (canvas.height - unibrowHeight) / 2;
                     drawLayers();
                 };
                 unibrowLayer.src = unibrowImage;
             });
+        });
+
+        // Touch drag for unibrow
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let unibrowStartX = 0;
+        let unibrowStartY = 0;
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (!unibrowLayer) return;
+
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touchX = (touch.clientX - rect.left) * scaleX;
+            const touchY = (touch.clientY - rect.top) * scaleY;
+
+            // Check if touch is on unibrow
+            if (touchX >= unibrowX && touchX <= unibrowX + unibrowWidth &&
+                touchY >= unibrowY && touchY <= unibrowY + unibrowHeight) {
+                isDragging = true;
+                dragStartX = touchX;
+                dragStartY = touchY;
+                unibrowStartX = unibrowX;
+                unibrowStartY = unibrowY;
+                e.preventDefault();
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touchX = (touch.clientX - rect.left) * scaleX;
+            const touchY = (touch.clientY - rect.top) * scaleY;
+
+            const deltaX = touchX - dragStartX;
+            const deltaY = touchY - dragStartY;
+
+            unibrowX = unibrowStartX + deltaX;
+            unibrowY = unibrowStartY + deltaY;
+
+            drawLayers();
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            isDragging = false;
         });
     </script>
 </body>
