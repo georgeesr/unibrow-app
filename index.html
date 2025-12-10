@@ -347,6 +347,7 @@
         // Layer images
         let photoLayer = null;
         let frameLayer = null;
+        let unibrowLayer = null;
         let stream = null;
 
         // Create hidden file input for upload
@@ -387,6 +388,15 @@
 
             // Draw photo layer (aspect-fill)
             drawImageCover(ctx, photoLayer, 0, 0, canvas.width, canvas.height);
+
+            // Draw unibrow layer (if exists) - centered
+            if (unibrowLayer && unibrowLayer.complete) {
+                const unibrowWidth = 300; // Default width
+                const unibrowHeight = (unibrowLayer.height / unibrowLayer.width) * unibrowWidth;
+                const x = (canvas.width - unibrowWidth) / 2;
+                const y = (canvas.height - unibrowHeight) / 2;
+                ctx.drawImage(unibrowLayer, x, y, unibrowWidth, unibrowHeight);
+            }
 
             // Draw frame layer on top (aspect-fill)
             drawImageCover(ctx, frameLayer, 0, 0, canvas.width, canvas.height);
@@ -565,6 +575,19 @@
                     drawLayers();
                 };
                 frameLayer.src = frameImage;
+            });
+        });
+
+        // Unibrow thumbnail click - add unibrow layer to canvas
+        const unibrowThumbnails = document.querySelectorAll('#unibrowGrid .thumbnail-frame');
+        unibrowThumbnails.forEach(thumbnail => {
+            thumbnail.addEventListener('click', () => {
+                const unibrowImage = thumbnail.src;
+                unibrowLayer = new Image();
+                unibrowLayer.onload = () => {
+                    drawLayers();
+                };
+                unibrowLayer.src = unibrowImage;
             });
         });
     </script>
