@@ -262,11 +262,19 @@
         const video = document.getElementById('video');
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
+        const uploadPicBtn = document.getElementById('uploadPicBtn');
 
         // Layer images
         let photoLayer = null;
         let frameLayer = null;
         let stream = null;
+
+        // Create hidden file input for upload
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
 
         // Load all layer images
         function loadLayers() {
@@ -383,6 +391,27 @@
             }
             cameraModal.classList.remove('active');
         }
+
+        // Upload pic button - open file picker
+        uploadPicBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change - load selected image
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    photoLayer = new Image();
+                    photoLayer.onload = () => {
+                        drawLayers();
+                    };
+                    photoLayer.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
 </body>
 </html>
