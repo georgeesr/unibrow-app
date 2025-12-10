@@ -99,6 +99,33 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
+        .save-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, opacity 0.2s;
+            display: none;
+            z-index: 100;
+        }
+
+        .save-btn.active {
+            display: block;
+        }
+
+        .save-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
         canvas {
             width: 100%;
             max-width: 400px;
@@ -273,6 +300,7 @@
     <div class="editor-screen" id="editorScreen">
         <div class="canvas-container">
             <canvas id="canvas" width="800" height="1000"></canvas>
+            <button class="save-btn" id="saveBtn">Save</button>
         </div>
 
         <div class="bottom-menu" id="bottomMenu">
@@ -331,6 +359,7 @@
         const menuButtons = document.getElementById('menuButtons');
         const thumbnailGrid = document.getElementById('thumbnailGrid');
         const frameGrid = document.getElementById('frameGrid');
+        const saveBtn = document.getElementById('saveBtn');
         const unibrowGrid = document.createElement('div');
         unibrowGrid.id = 'unibrowGrid';
         unibrowGrid.className = 'thumbnail-grid';
@@ -530,6 +559,7 @@
                 menuTitle.textContent = 'Frame';
                 unibrowGrid.classList.remove('active');
                 frameGrid.classList.add('active');
+                saveBtn.classList.remove('active');
                 currentMenu = 'frame';
             } else if (currentMenu === 'frame') {
                 // Go back to "Background" menu
@@ -569,6 +599,7 @@
                 menuTitle.textContent = 'Unibrow';
                 frameGrid.classList.remove('active');
                 unibrowGrid.classList.add('active');
+                saveBtn.classList.add('active');
                 currentMenu = 'unibrow';
             }
         });
@@ -727,6 +758,14 @@
             if (e.touches.length === 0) {
                 isDragging = false;
             }
+        });
+
+        // Save button - download canvas as image
+        saveBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'my-unibrow.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
         });
     </script>
 </body>
