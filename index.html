@@ -72,6 +72,69 @@
             display: none;
         }
 
+        /* Preview Screen */
+        .preview-screen {
+            display: none;
+            min-height: 100vh;
+            height: 100vh;
+            padding: 40px 20px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: url('new_images/unibrow_background_rf.jpg') center center / cover no-repeat;
+            background-attachment: fixed;
+            overflow: hidden;
+        }
+
+        .preview-screen.active {
+            display: flex;
+        }
+
+        .preview-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .preview-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .preview-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .preview-btn.share-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .preview-btn:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
         /* Editor Screen */
         .editor-screen {
             display: none !important;
@@ -333,6 +396,17 @@
         </div>
     </div>
 
+    <!-- Preview Screen -->
+    <div class="preview-screen" id="previewScreen">
+        <div class="preview-container">
+            <canvas id="previewCanvas" width="800" height="1000" class="preview-canvas"></canvas>
+        </div>
+        <div class="preview-buttons">
+            <button class="preview-btn" id="savePreviewBtn">Save</button>
+            <button class="preview-btn share-btn" id="sharePreviewBtn">Share</button>
+        </div>
+    </div>
+
     <!-- Camera Modal -->
     <div class="camera-modal" id="cameraModal">
         <video id="video" autoplay playsinline></video>
@@ -361,6 +435,11 @@
         const thumbnailGrid = document.getElementById('thumbnailGrid');
         const frameGrid = document.getElementById('frameGrid');
         const saveBtn = document.getElementById('saveBtn');
+        const previewScreen = document.getElementById('previewScreen');
+        const previewCanvas = document.getElementById('previewCanvas');
+        const previewCtx = previewCanvas.getContext('2d');
+        const savePreviewBtn = document.getElementById('savePreviewBtn');
+        const sharePreviewBtn = document.getElementById('sharePreviewBtn');
         const unibrowGrid = document.createElement('div');
         unibrowGrid.id = 'unibrowGrid';
         unibrowGrid.className = 'thumbnail-grid';
@@ -770,12 +849,52 @@
             }
         });
 
-        // Save button - download canvas as image
+        // Save button - go to preview screen
         saveBtn.addEventListener('click', () => {
+            // Copy the main canvas to preview canvas
+            previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+            previewCtx.drawImage(canvas, 0, 0);
+
+            // Hide editor, show preview
+            editorScreen.classList.remove('active');
+            previewScreen.classList.add('active');
+        });
+
+        // Save Preview button - download the image
+        savePreviewBtn.addEventListener('click', () => {
             const link = document.createElement('a');
             link.download = 'my-unibrow.png';
-            link.href = canvas.toDataURL('image/png');
+            link.href = previewCanvas.toDataURL('image/png');
             link.click();
+        });
+
+        // Share Preview button - share the image
+        sharePreviewBtn.addEventListener('click', async () => {
+            try {
+                previewCanvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
+
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'My Unibrow Creation',
+                                text: 'Check out my unibrow!'
+                            });
+                        } catch (err) {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share failed:', err);
+                                alert('Could not share. Try Save instead!');
+                            }
+                        }
+                    } else {
+                        alert('Sharing not supported on this device. Use Save button instead!');
+                    }
+                }, 'image/png');
+            } catch (err) {
+                console.error('Error creating share:', err);
+                alert('Could not share. Try Save instead!');
+            }
         });
     </script>
 </body>
