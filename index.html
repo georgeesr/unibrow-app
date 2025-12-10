@@ -355,6 +355,8 @@
         let unibrowY = 0;
         let unibrowWidth = 300;
         let unibrowHeight = 0;
+        let unibrowRotation = 0; // in degrees
+        let unibrowScale = 1;
 
         // Create hidden file input for upload
         const fileInput = document.createElement('input');
@@ -395,9 +397,22 @@
             // Draw photo layer (aspect-fill)
             drawImageCover(ctx, photoLayer, 0, 0, canvas.width, canvas.height);
 
-            // Draw unibrow layer (if exists)
+            // Draw unibrow layer (if exists) with rotation and scale
             if (unibrowLayer && unibrowLayer.complete) {
-                ctx.drawImage(unibrowLayer, unibrowX, unibrowY, unibrowWidth, unibrowHeight);
+                ctx.save();
+
+                // Move to center of unibrow
+                const centerX = unibrowX + (unibrowWidth * unibrowScale) / 2;
+                const centerY = unibrowY + (unibrowHeight * unibrowScale) / 2;
+
+                ctx.translate(centerX, centerY);
+                ctx.rotate(unibrowRotation * Math.PI / 180);
+                ctx.scale(unibrowScale, unibrowScale);
+
+                // Draw centered at origin
+                ctx.drawImage(unibrowLayer, -unibrowWidth / 2, -unibrowHeight / 2, unibrowWidth, unibrowHeight);
+
+                ctx.restore();
             }
 
             // Draw frame layer on top (aspect-fill)
@@ -592,63 +607,126 @@
                     unibrowHeight = (unibrowLayer.height / unibrowLayer.width) * unibrowWidth;
                     unibrowX = (canvas.width - unibrowWidth) / 2;
                     unibrowY = (canvas.height - unibrowHeight) / 2;
+                    unibrowRotation = 0;
+                    unibrowScale = 1;
                     drawLayers();
                 };
                 unibrowLayer.src = unibrowImage;
             });
         });
 
-        // Touch drag for unibrow
+        // Touch manipulation for unibrow
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
         let unibrowStartX = 0;
         let unibrowStartY = 0;
+        let initialPinchDistance = 0;
+        let initialScale = 1;
+        let initialRotationAngle = 0;
+        let initialRotation = 0;
 
         canvas.addEventListener('touchstart', (e) => {
             if (!unibrowLayer) return;
 
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const touchX = (touch.clientX - rect.left) * scaleX;
-            const touchY = (touch.clientY - rect.top) * scaleY;
+            if (e.touches.length === 1) {
+                // Single touch - drag
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const touchX = (touch.clientX - rect.left) * scaleX;
+                const touchY = (touch.clientY - rect.top) * scaleY;
 
-            // Check if touch is on unibrow
-            if (touchX >= unibrowX && touchX <= unibrowX + unibrowWidth &&
-                touchY >= unibrowY && touchY <= unibrowY + unibrowHeight) {
-                isDragging = true;
-                dragStartX = touchX;
-                dragStartY = touchY;
-                unibrowStartX = unibrowX;
-                unibrowStartY = unibrowY;
+                // Check if touch is on unibrow (simple bounding box check)
+                const centerX = unibrowX + (unibrowWidth * unibrowScale) / 2;
+                const centerY = unibrowY + (unibrowHeight * unibrowScale) / 2;
+                const halfWidth = (unibrowWidth * unibrowScale) / 2;
+                const halfHeight = (unibrowHeight * unibrowScale) / 2;
+
+                if (touchX >= centerX - halfWidth && touchX <= centerX + halfWidth &&
+                    touchY >= centerY - halfHeight && touchY <= centerY + halfHeight) {
+                    isDragging = true;
+                    dragStartX = touchX;
+                    dragStartY = touchY;
+                    unibrowStartX = unibrowX;
+                    unibrowStartY = unibrowY;
+                    e.preventDefault();
+                }
+            } else if (e.touches.length === 2) {
+                // Two fingers - pinch and rotate
+                isDragging = false;
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+
+                // Store initial pinch distance
+                initialPinchDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                initialScale = unibrowScale;
+
+                // Store initial rotation angle
+                initialRotationAngle = Math.atan2(
+                    touch2.clientY - touch1.clientY,
+                    touch2.clientX - touch1.clientX
+                ) * (180 / Math.PI);
+                initialRotation = unibrowRotation;
+
                 e.preventDefault();
             }
         });
 
         canvas.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
+            if (!unibrowLayer) return;
 
-            const touch = e.touches[0];
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const touchX = (touch.clientX - rect.left) * scaleX;
-            const touchY = (touch.clientY - rect.top) * scaleY;
+            if (e.touches.length === 1 && isDragging) {
+                // Single touch - drag
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const touchX = (touch.clientX - rect.left) * scaleX;
+                const touchY = (touch.clientY - rect.top) * scaleY;
 
-            const deltaX = touchX - dragStartX;
-            const deltaY = touchY - dragStartY;
+                const deltaX = touchX - dragStartX;
+                const deltaY = touchY - dragStartY;
 
-            unibrowX = unibrowStartX + deltaX;
-            unibrowY = unibrowStartY + deltaY;
+                unibrowX = unibrowStartX + deltaX;
+                unibrowY = unibrowStartY + deltaY;
 
-            drawLayers();
-            e.preventDefault();
+                drawLayers();
+                e.preventDefault();
+            } else if (e.touches.length === 2) {
+                // Two fingers - pinch and rotate
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+
+                // Calculate pinch scale
+                const currentDistance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                const scaleChange = currentDistance / initialPinchDistance;
+                unibrowScale = initialScale * scaleChange;
+
+                // Calculate rotation
+                const currentAngle = Math.atan2(
+                    touch2.clientY - touch1.clientY,
+                    touch2.clientX - touch1.clientX
+                ) * (180 / Math.PI);
+                const angleDelta = currentAngle - initialRotationAngle;
+                unibrowRotation = initialRotation + angleDelta;
+
+                drawLayers();
+                e.preventDefault();
+            }
         });
 
         canvas.addEventListener('touchend', (e) => {
-            isDragging = false;
+            if (e.touches.length === 0) {
+                isDragging = false;
+            }
         });
     </script>
 </body>
