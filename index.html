@@ -11,6 +11,12 @@
     <link rel="apple-touch-icon" href="app-icon.png">
 
     <title>Unibrow Maker</title>
+
+    <!-- Face detection library -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+
     <style>
         * {
             margin: 0;
@@ -31,12 +37,10 @@
             text-align: center;
             padding: 40px 20px;
             min-height: 100vh;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
         .title-image {
@@ -46,262 +50,151 @@
             margin-bottom: 40px;
         }
 
-        .begin-btn {
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .main-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 60px;
+            padding: 20px 40px;
             border: none;
             border-radius: 50px;
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .begin-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .begin-btn:active {
+        .main-btn:active {
             transform: scale(0.95);
         }
 
         .hidden {
-            display: none;
-        }
-
-        /* Preview Screen */
-        .preview-screen {
-            display: none;
-            min-height: 100vh;
-            height: 100vh;
-            padding: 40px 20px;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            background: #000000;
-            overflow: hidden;
-        }
-
-        .preview-screen.active {
-            display: flex;
-        }
-
-        .preview-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px;
-            aspect-ratio: 4 / 5;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 10px;
-        }
-
-        .preview-canvas {
-            width: 75%;
-            height: auto;
-            display: block;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .preview-buttons {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .preview-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .preview-btn.share-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        }
-
-        .preview-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
+            display: none !important;
         }
 
         /* Editor Screen */
         .editor-screen {
-            display: none !important;
-            height: 100vh;
+            display: none;
+            min-height: 100vh;
             padding: 20px;
-            padding-bottom: 0;
-            align-items: flex-start;
-            justify-content: center;
-            background: url('new_images/placeholder-background.jpg') center center / cover no-repeat;
-            background-attachment: fixed;
-            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px;
         }
 
         .editor-screen.active {
-            display: flex !important;
+            display: flex;
         }
 
         .canvas-container {
             position: relative;
             width: 100%;
-            max-width: 400px;
-            margin: 20px auto 15px auto;
-            flex-shrink: 0;
+            max-width: 500px;
+            margin-bottom: 30px;
             border-radius: 10px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
 
-        .save-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 6px 14px;
-            border: none;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            display: none;
-        }
-
-        .save-btn.active {
-            display: inline-block;
-        }
-
-        .save-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        .menu-carat.hidden {
-            display: none;
-        }
-
-        canvas {
+        #canvas {
             width: 100%;
-            max-width: 400px;
             height: auto;
             display: block;
-            border-radius: 10px;
         }
 
-        /* Bottom Menu */
-        .bottom-menu {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #666666;
-            border-radius: 15px 15px 0 0;
-            padding: 20px 20px 20px 20px;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
-            height: 150px;
+        .controls {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .menu-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            margin-top: -15px;
-            padding: 0 10px;
+        .slider-container {
+            margin-bottom: 20px;
         }
 
-        .menu-title {
-            color: white;
-            font-size: 0.9em;
-            flex: 1;
-            text-align: center;
+        .slider-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
         }
 
-        .menu-carat {
-            color: white;
-            font-size: 1.2em;
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             cursor: pointer;
-            padding: 5px;
-            font-weight: bold;
         }
 
-        .menu-header > :first-child {
-            width: 60px;
-            text-align: left;
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
         }
 
-        .menu-header > :last-child {
-            width: 60px;
-            text-align: right;
+        /* Highlights slider */
+        #colorSlider {
+            background: linear-gradient(to right,
+                #333 0%,         /* No highlights */
+                #666 25%,        /* Subtle */
+                #999 50%,        /* Medium */
+                #ccc 75%,        /* Strong */
+                #fff 100%        /* Very strong */
+            );
         }
 
-        .menu-buttons {
+        .action-buttons {
             display: flex;
             gap: 10px;
-            margin-bottom: 0;
         }
 
-        .menu-btn {
+        .action-btn {
             flex: 1;
-            background: white;
-            color: #666666;
-            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 50px;
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, opacity 0.2s;
         }
 
-        .menu-btn:active {
+        .action-btn.share {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .action-btn:active {
             transform: scale(0.95);
             opacity: 0.8;
-        }
-
-        /* Thumbnail Grid */
-        .thumbnail-grid {
-            display: none;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            margin-bottom: 0;
-            padding: 0 10px;
-        }
-
-        .thumbnail-grid.active {
-            display: grid;
-        }
-
-        .thumbnail {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 8px;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .thumbnail:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        .thumbnail-frame {
-            background: transparent;
-            object-fit: contain;
-            padding: 5px;
         }
 
         /* Camera Modal */
@@ -346,69 +239,59 @@
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
         .camera-btn:active {
             transform: scale(0.95);
-            opacity: 0.8;
         }
 
         .close-btn {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
+    <!-- Home Screen -->
     <div class="home-screen" id="homeScreen">
         <img src="new_images/unibrow_title.png" alt="Unibrow Generator" class="title-image">
-        <button class="begin-btn" id="beginBtn">Begin</button>
+        <div class="button-container">
+            <button class="main-btn" id="takePicBtn">Take a Pic</button>
+            <button class="main-btn" id="uploadPicBtn">Upload a Pic</button>
+        </div>
     </div>
 
+    <!-- Editor Screen -->
     <div class="editor-screen" id="editorScreen">
         <div class="canvas-container">
-            <canvas id="canvas" width="800" height="1000"></canvas>
+            <canvas id="canvas"></canvas>
         </div>
-
-        <div class="bottom-menu" id="bottomMenu">
-            <div class="menu-header">
-                <div class="menu-carat" id="backCarat">‹</div>
-                <div class="menu-title" id="menuTitle">Your pic</div>
-                <div class="menu-carat" id="forwardCarat">›</div>
-                <button class="save-btn" id="saveBtn">Save</button>
+        <div class="controls">
+            <div class="slider-container">
+                <label class="slider-label">Unibrow Intensity</label>
+                <input type="range" min="0" max="100" value="0" class="slider" id="unibrowSlider">
             </div>
-            <div class="menu-buttons" id="menuButtons">
-                <button class="menu-btn" id="takePicBtn">Take pic</button>
-                <button class="menu-btn" id="uploadPicBtn">Upload pic</button>
+            <div class="slider-container">
+                <label class="slider-label">Darkness</label>
+                <input type="range" min="-50" max="50" value="0" class="slider" id="darknessSlider">
             </div>
-            <div class="thumbnail-grid" id="thumbnailGrid">
-                <img src="new_images/background-1.jpg" class="thumbnail" alt="Background 1">
-                <img src="new_images/background-2.jpg" class="thumbnail" alt="Background 2">
-                <img src="new_images/background-3.jpg" class="thumbnail" alt="Background 3">
-                <img src="new_images/background-4.jpg" class="thumbnail" alt="Background 4">
-                <img src="new_images/background-5.jpg" class="thumbnail" alt="Background 5">
-                <img src="new_images/background-6.jpg" class="thumbnail" alt="Background 6">
+            <div class="slider-container">
+                <label class="slider-label">Highlights</label>
+                <input type="range" min="0" max="100" value="0" class="slider" id="colorSlider">
             </div>
-            <div class="thumbnail-grid thumbnail-grid-frames" id="frameGrid">
-                <img src="new_images/frame-1.png" class="thumbnail thumbnail-frame" alt="Frame 1">
-                <img src="new_images/frame-2.png" class="thumbnail thumbnail-frame" alt="Frame 2">
-                <img src="new_images/frame-3.png" class="thumbnail thumbnail-frame" alt="Frame 3">
-                <img src="new_images/frame-4.png" class="thumbnail thumbnail-frame" alt="Frame 4">
-                <img src="new_images/frame-5.png" class="thumbnail thumbnail-frame" alt="Frame 5">
-                <img src="new_images/frame-6.png" class="thumbnail thumbnail-frame" alt="Frame 6">
+            <div class="action-buttons">
+                <button class="action-btn" id="newPicBtn">Upload New Pic</button>
+                <button class="action-btn share" id="shareBtn">Share</button>
             </div>
         </div>
-    </div>
-
-    <!-- Preview Screen -->
-    <div class="preview-screen" id="previewScreen">
-        <div class="preview-container">
-            <canvas id="previewCanvas" width="800" height="1000" class="preview-canvas"></canvas>
-        </div>
-        <div class="preview-buttons">
-            <button class="preview-btn share-btn" id="sharePreviewBtn">Share</button>
-            <button class="preview-btn" id="editPreviewBtn">Edit</button>
-        </div>
+        <div class="loading" id="loadingText" style="display: none;">Detecting face...</div>
     </div>
 
     <!-- Camera Modal -->
@@ -420,152 +303,434 @@
         </div>
     </div>
 
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+    <!-- Upload New Pic Modal -->
+    <div class="camera-modal" id="newPicModal">
+        <div style="display: flex; flex-direction: column; gap: 20px; max-width: 300px; width: 90%;">
+            <button class="camera-btn" id="modalTakePicBtn">Take a Pic</button>
+            <button class="camera-btn" id="modalUploadPicBtn">Upload a Pic</button>
+            <button class="camera-btn close-btn" id="closeNewPicModal">Cancel</button>
+        </div>
+    </div>
+
     <script>
+        // Elements
         const homeScreen = document.getElementById('homeScreen');
         const editorScreen = document.getElementById('editorScreen');
-        const beginBtn = document.getElementById('beginBtn');
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
         const takePicBtn = document.getElementById('takePicBtn');
+        const uploadPicBtn = document.getElementById('uploadPicBtn');
+        const fileInput = document.getElementById('fileInput');
         const cameraModal = document.getElementById('cameraModal');
         const video = document.getElementById('video');
         const captureBtn = document.getElementById('captureBtn');
         const closeCameraBtn = document.getElementById('closeCameraBtn');
-        const uploadPicBtn = document.getElementById('uploadPicBtn');
-        const backCarat = document.getElementById('backCarat');
-        const forwardCarat = document.getElementById('forwardCarat');
-        const menuTitle = document.getElementById('menuTitle');
-        const menuButtons = document.getElementById('menuButtons');
-        const thumbnailGrid = document.getElementById('thumbnailGrid');
-        const frameGrid = document.getElementById('frameGrid');
-        const saveBtn = document.getElementById('saveBtn');
-        const previewScreen = document.getElementById('previewScreen');
-        const previewCanvas = document.getElementById('previewCanvas');
-        const previewCtx = previewCanvas.getContext('2d');
-        const editPreviewBtn = document.getElementById('editPreviewBtn');
-        const sharePreviewBtn = document.getElementById('sharePreviewBtn');
-        const unibrowGrid = document.createElement('div');
-        unibrowGrid.id = 'unibrowGrid';
-        unibrowGrid.className = 'thumbnail-grid';
-        unibrowGrid.innerHTML = `
-            <img src="new_images/unibrow-1.png" class="thumbnail thumbnail-frame" alt="Unibrow 1">
-            <img src="new_images/unibrow-2.png" class="thumbnail thumbnail-frame" alt="Unibrow 2">
-            <img src="new_images/unibrow-3.png" class="thumbnail thumbnail-frame" alt="Unibrow 3">
-            <img src="new_images/unibrow-4.png" class="thumbnail thumbnail-frame" alt="Unibrow 4">
-            <img src="new_images/unibrow-5.png" class="thumbnail thumbnail-frame" alt="Unibrow 5">
-            <img src="new_images/unibrow-6.png" class="thumbnail thumbnail-frame" alt="Unibrow 6">
-        `;
-        document.getElementById('bottomMenu').appendChild(unibrowGrid);
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const unibrowSlider = document.getElementById('unibrowSlider');
+        const darknessSlider = document.getElementById('darknessSlider');
+        const colorSlider = document.getElementById('colorSlider');
+        const newPicBtn = document.getElementById('newPicBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const loadingText = document.getElementById('loadingText');
+        const newPicModal = document.getElementById('newPicModal');
+        const modalTakePicBtn = document.getElementById('modalTakePicBtn');
+        const modalUploadPicBtn = document.getElementById('modalUploadPicBtn');
+        const closeNewPicModal = document.getElementById('closeNewPicModal');
 
-        // Layer images
-        let photoLayer = null;
-        let frameLayer = null;
-        let unibrowLayer = null;
+        let originalImage = null;
+        let faceLandmarks = null;
         let stream = null;
+        let faceMesh = null;
 
-        // Unibrow position and transform
-        let unibrowX = 0;
-        let unibrowY = 0;
-        let unibrowWidth = 300;
-        let unibrowHeight = 0;
-        let unibrowRotation = 0; // in degrees
-        let unibrowScale = 1;
-
-        // Create hidden file input for upload
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.style.display = 'none';
-        document.body.appendChild(fileInput);
-
-        // Load all layer images
-        function loadLayers() {
-            // Load placeholder photo
-            photoLayer = new Image();
-            photoLayer.src = 'new_images/placeholder_pic.jpg';
-
-            // Load frame
-            frameLayer = new Image();
-            frameLayer.src = 'new_images/placeholder-frame.png';
-
-            // Wait for all images to load, then draw
-            let loadedCount = 0;
-            const totalImages = 2;
-
-            function checkAllLoaded() {
-                loadedCount++;
-                if (loadedCount === totalImages) {
-                    drawLayers();
+        // Initialize MediaPipe Face Mesh
+        function initFaceMesh() {
+            faceMesh = new FaceMesh({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4/${file}`;
                 }
-            }
+            });
 
-            photoLayer.onload = checkAllLoaded;
-            frameLayer.onload = checkAllLoaded;
+            faceMesh.setOptions({
+                maxNumFaces: 1,
+                refineLandmarks: true,
+                minDetectionConfidence: 0.5,
+                minTrackingConfidence: 0.5
+            });
+
+            faceMesh.onResults(onFaceMeshResults);
         }
 
-        // Draw all layers on canvas
-        function drawLayers() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw photo layer (aspect-fill)
-            drawImageCover(ctx, photoLayer, 0, 0, canvas.width, canvas.height);
-
-            // Draw unibrow layer (if exists) with rotation and scale
-            if (unibrowLayer && unibrowLayer.complete) {
-                ctx.save();
-
-                // Move to center of unibrow
-                const centerX = unibrowX + (unibrowWidth * unibrowScale) / 2;
-                const centerY = unibrowY + (unibrowHeight * unibrowScale) / 2;
-
-                ctx.translate(centerX, centerY);
-                ctx.rotate(unibrowRotation * Math.PI / 180);
-                ctx.scale(unibrowScale, unibrowScale);
-
-                // Draw centered at origin
-                ctx.drawImage(unibrowLayer, -unibrowWidth / 2, -unibrowHeight / 2, unibrowWidth, unibrowHeight);
-
-                ctx.restore();
-            }
-
-            // Draw frame layer on top (aspect-fill)
-            drawImageCover(ctx, frameLayer, 0, 0, canvas.width, canvas.height);
-        }
-
-        // Helper function to draw image with aspect-fill (cover)
-        function drawImageCover(ctx, image, x, y, width, height) {
-            if (!image || !image.complete) return;
-
-            const imgAspect = image.width / image.height;
-            const canvasAspect = width / height;
-
-            let drawWidth, drawHeight, offsetX, offsetY;
-
-            if (imgAspect > canvasAspect) {
-                // Image is wider - fit to height
-                drawHeight = height;
-                drawWidth = image.width * (height / image.height);
-                offsetX = (width - drawWidth) / 2;
-                offsetY = 0;
+        // Handle face mesh results
+        function onFaceMeshResults(results) {
+            if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+                faceLandmarks = results.multiFaceLandmarks[0];
+                loadingText.style.display = 'none';
+                drawCanvas();
             } else {
-                // Image is taller - fit to width
-                drawWidth = width;
-                drawHeight = image.height * (width / image.width);
-                offsetX = 0;
-                offsetY = (height - drawHeight) / 2;
+                faceLandmarks = null;
+                loadingText.textContent = 'No face detected. Please try another image.';
             }
-
-            ctx.drawImage(image, x + offsetX, y + offsetY, drawWidth, drawHeight);
         }
 
-        // Begin button - go to editor
-        beginBtn.addEventListener('click', () => {
-            homeScreen.classList.add('hidden');
-            editorScreen.classList.add('active');
-            loadLayers();
-        });
+        // Process image for face detection
+        async function detectFace(image) {
+            loadingText.style.display = 'block';
+            loadingText.textContent = 'Detecting face...';
 
-        // Take pic button - open camera
+            if (!faceMesh) {
+                initFaceMesh();
+            }
+
+            await faceMesh.send({image: image});
+        }
+
+        // Draw canvas with unibrow
+        function drawCanvas() {
+            if (!originalImage) return;
+
+            // Set canvas size to match image
+            canvas.width = originalImage.width;
+            canvas.height = originalImage.height;
+
+            // Draw original image
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(originalImage, 0, 0);
+
+            // Draw unibrow if landmarks exist
+            if (faceLandmarks && unibrowSlider.value > 0) {
+                drawUnibrow();
+            }
+        }
+
+        // Draw unibrow based on eyebrow landmarks
+        function drawUnibrow() {
+            const intensity = unibrowSlider.value / 100;
+            if (intensity === 0) return;
+
+            // Get all eyebrow landmark points for accurate shape
+            // Left eyebrow landmarks (outer to inner): 46, 53, 52, 65, 55
+            const leftBrowPoints = [46, 53, 52, 65, 55].map(idx => ({
+                x: faceLandmarks[idx].x * canvas.width,
+                y: faceLandmarks[idx].y * canvas.height
+            }));
+
+            // Right eyebrow landmarks (inner to outer): 285, 295, 282, 283, 276
+            const rightBrowPoints = [285, 295, 282, 283, 276].map(idx => ({
+                x: faceLandmarks[idx].x * canvas.width,
+                y: faceLandmarks[idx].y * canvas.height
+            }));
+
+            // Combine into one continuous path (left to right)
+            const allBrowPoints = [...leftBrowPoints, ...rightBrowPoints];
+
+            // Add bridge points to connect the eyebrows smoothly
+            const bridge = faceLandmarks[168]; // Nose bridge
+            const bridgePoint = {
+                x: bridge.x * canvas.width,
+                y: bridge.y * canvas.height - 5
+            };
+
+            // Insert bridge point between the two eyebrows
+            const fullUnibrowPath = [
+                ...leftBrowPoints,
+                bridgePoint,
+                ...rightBrowPoints
+            ];
+
+            ctx.save();
+            ctx.globalAlpha = 0.9;
+
+            // Enable anti-aliasing for smoother hair
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            // Sample eyebrow color from the original image
+            function sampleEyebrowColor() {
+                // Sample multiple points from both eyebrows
+                const samplePoints = [
+                    faceLandmarks[46], faceLandmarks[53], faceLandmarks[55], // Left eyebrow
+                    faceLandmarks[276], faceLandmarks[283], faceLandmarks[285] // Right eyebrow
+                ];
+
+                let totalR = 0, totalG = 0, totalB = 0;
+                let samples = 0;
+
+                samplePoints.forEach(point => {
+                    const x = Math.floor(point.x * canvas.width);
+                    const y = Math.floor(point.y * canvas.height);
+
+                    // Sample a small area around each point
+                    for (let dx = -2; dx <= 2; dx++) {
+                        for (let dy = -2; dy <= 2; dy++) {
+                            const px = x + dx;
+                            const py = y + dy;
+                            if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+                                const pixel = ctx.getImageData(px, py, 1, 1).data;
+                                totalR += pixel[0];
+                                totalG += pixel[1];
+                                totalB += pixel[2];
+                                samples++;
+                            }
+                        }
+                    }
+                });
+
+                // Average color
+                let avgR = Math.floor(totalR / samples);
+                let avgG = Math.floor(totalG / samples);
+                let avgB = Math.floor(totalB / samples);
+
+                // Apply darkness adjustment (-50 to +50)
+                const darknessValue = parseInt(darknessSlider.value);
+                avgR = Math.max(0, Math.min(255, avgR - darknessValue));
+                avgG = Math.max(0, Math.min(255, avgG - darknessValue));
+                avgB = Math.max(0, Math.min(255, avgB - darknessValue));
+
+                // Apply highlights (0-100)
+                const highlightValue = parseInt(colorSlider.value) / 100;
+
+                // Create color variations with highlights
+                // Base color stays the same, but we add lighter variations for highlights
+                const colors = [
+                    `rgba(${avgR}, ${avgG}, ${avgB}, 0.9)`,
+                    `rgba(${Math.max(0, avgR - 15)}, ${Math.max(0, avgG - 15)}, ${Math.max(0, avgB - 15)}, 0.9)`,
+                    `rgba(${Math.max(0, avgR - 30)}, ${Math.max(0, avgG - 30)}, ${Math.max(0, avgB - 30)}, 0.95)`,
+                    `rgba(${Math.min(255, avgR + 10)}, ${Math.min(255, avgG + 10)}, ${Math.min(255, avgB + 10)}, 0.85)`
+                ];
+
+                // Add highlighted strands (lighter versions)
+                if (highlightValue > 0) {
+                    const highlightBoost = highlightValue * 80; // 0 to 80 RGB boost
+                    colors.push(
+                        `rgba(${Math.min(255, avgR + highlightBoost)}, ${Math.min(255, avgG + highlightBoost)}, ${Math.min(255, avgB + highlightBoost)}, 0.85)`,
+                        `rgba(${Math.min(255, avgR + highlightBoost * 0.7)}, ${Math.min(255, avgG + highlightBoost * 0.7)}, ${Math.min(255, avgB + highlightBoost * 0.7)}, 0.8)`,
+                        `rgba(${Math.min(255, avgR + highlightBoost * 1.2)}, ${Math.min(255, avgG + highlightBoost * 1.2)}, ${Math.min(255, avgB + highlightBoost * 1.2)}, 0.75)`
+                    );
+                }
+
+                return colors;
+            }
+
+            const eyebrowColors = sampleEyebrowColor();
+
+            // Function to interpolate along the eyebrow curve
+            function getPointOnCurve(t) {
+                // t is 0 to 1 along the entire curve
+                const totalSegments = fullUnibrowPath.length - 1;
+                const segment = Math.min(Math.floor(t * totalSegments), totalSegments - 1);
+                const localT = (t * totalSegments) - segment;
+
+                const p1 = fullUnibrowPath[segment];
+                const p2 = fullUnibrowPath[segment + 1];
+
+                return {
+                    x: p1.x + (p2.x - p1.x) * localT,
+                    y: p1.y + (p2.y - p1.y) * localT
+                };
+            }
+
+            // Function to get the angle/direction at a point on the curve
+            function getAngleAtPoint(t) {
+                const totalSegments = fullUnibrowPath.length - 1;
+                const segment = Math.min(Math.floor(t * totalSegments), totalSegments - 1);
+
+                const p1 = fullUnibrowPath[segment];
+                const p2 = fullUnibrowPath[segment + 1];
+
+                // Tangent angle of the curve at this point
+                const tangentAngle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+                // Perpendicular to the curve (upward/outward from eyebrow)
+                return tangentAngle - Math.PI / 2;
+            }
+
+            // Draw base hair layer following the exact eyebrow shape - MUCH BUSHIER!
+            const numStrokes = Math.floor(400 + intensity * 3000);
+
+            for (let i = 0; i < numStrokes; i++) {
+                const t = Math.random();
+                const basePoint = getPointOnCurve(t);
+                const baseAngle = getAngleAtPoint(t);
+
+                // Much wider spread for bushiness and thickness
+                const spreadRadius = 40 * intensity;
+                const randomAngle = Math.random() * Math.PI * 2;
+                const randomDist = Math.random() * spreadRadius;
+
+                const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
+                const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
+
+                // Hair grows perpendicular to eyebrow curve with more variation
+                const angleVariation = (Math.random() - 0.5) * 0.8;
+                const hairAngle = baseAngle + angleVariation;
+
+                // Longer, wilder hair
+                const hairLength = (15 + Math.random() * 35) * (0.6 + intensity * 1.4);
+                const thickness = 1.2 + Math.random() * 2.5;
+
+                // Use sampled eyebrow colors with varied opacity for depth
+                const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
+                const baseColor = eyebrowColors[colorIndex];
+                const opacity = 0.7 + Math.random() * 0.3;
+                ctx.strokeStyle = baseColor.replace(/[\d\.]+\)$/g, opacity + ')');
+                ctx.lineWidth = thickness;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Draw curved hair with more wildness and gradient effect
+                const endX = startX + Math.cos(hairAngle) * hairLength;
+                const endY = startY + Math.sin(hairAngle) * hairLength;
+                const controlX = startX + Math.cos(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 5;
+                const controlY = startY + Math.sin(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 5;
+
+                // Create gradient for tapered hair effect
+                const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+                gradient.addColorStop(0, baseColor);
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.3) + ')'));
+                ctx.strokeStyle = gradient;
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+                ctx.stroke();
+            }
+
+            // Add MORE density layers for extreme bushiness
+            const densityStrokes = Math.floor(300 + intensity * 1600);
+            for (let i = 0; i < densityStrokes; i++) {
+                const t = Math.random();
+                const basePoint = getPointOnCurve(t);
+                const baseAngle = getAngleAtPoint(t);
+
+                const spreadRadius = 38 * intensity;
+                const randomAngle = Math.random() * Math.PI * 2;
+                const randomDist = Math.random() * spreadRadius;
+
+                const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
+                const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
+
+                const angleVariation = (Math.random() - 0.5) * 0.7;
+                const hairAngle = baseAngle + angleVariation;
+
+                const hairLength = (18 + Math.random() * 40) * (0.7 + intensity * 1.2);
+                const thickness = 1.5 + Math.random() * 2.8;
+
+                const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
+                const baseColor = eyebrowColors[colorIndex];
+                const opacity = 0.65 + Math.random() * 0.25;
+
+                const endX = startX + Math.cos(hairAngle) * hairLength;
+                const endY = startY + Math.sin(hairAngle) * hairLength;
+
+                // Tapered gradient
+                const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+                gradient.addColorStop(0, baseColor);
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.2) + ')'));
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = thickness;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+
+            // Add EXTRA thick and wild foreground hairs
+            const thickHairs = Math.floor(160 + intensity * 800);
+            for (let i = 0; i < thickHairs; i++) {
+                const t = Math.random();
+                const basePoint = getPointOnCurve(t);
+                const baseAngle = getAngleAtPoint(t);
+
+                const spreadRadius = 45 * intensity;
+                const randomAngle = Math.random() * Math.PI * 2;
+                const randomDist = Math.random() * spreadRadius;
+
+                const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
+                const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
+
+                const angleVariation = (Math.random() - 0.5) * 0.9;
+                const hairAngle = baseAngle + angleVariation;
+
+                const hairLength = (22 + Math.random() * 45) * (0.8 + intensity * 1.1);
+                const thickness = 2.2 + Math.random() * 3.5;
+
+                const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
+                const baseColor = eyebrowColors[colorIndex];
+                const opacity = 0.8 + Math.random() * 0.2;
+
+                const endX = startX + Math.cos(hairAngle) * hairLength;
+                const endY = startY + Math.sin(hairAngle) * hairLength;
+                const controlX = startX + Math.cos(hairAngle) * hairLength * 0.6 + (Math.random() - 0.5) * 6;
+                const controlY = startY + Math.sin(hairAngle) * hairLength * 0.6 + (Math.random() - 0.5) * 6;
+
+                // Tapered thick hair
+                const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+                gradient.addColorStop(0, baseColor);
+                gradient.addColorStop(0.7, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.7) + ')'));
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.1) + ')'));
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = thickness;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+                ctx.stroke();
+            }
+
+            // Add super wild stray hairs for maximum bushiness
+            const strayHairs = Math.floor(100 + intensity * 600);
+            for (let i = 0; i < strayHairs; i++) {
+                const t = Math.random();
+                const basePoint = getPointOnCurve(t);
+                const baseAngle = getAngleAtPoint(t);
+
+                const spreadRadius = 50 * intensity;
+                const randomAngle = Math.random() * Math.PI * 2;
+                const randomDist = Math.random() * spreadRadius;
+
+                const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
+                const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
+
+                // More extreme angle variation for wild strays
+                const angleVariation = (Math.random() - 0.5) * 1.2;
+                const hairAngle = baseAngle + angleVariation;
+
+                const hairLength = (18 + Math.random() * 35) * (0.9 + intensity * 0.8);
+                const thickness = 1.3 + Math.random() * 2.2;
+
+                const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
+                const baseColor = eyebrowColors[colorIndex];
+                const opacity = 0.6 + Math.random() * 0.3;
+
+                const endX = startX + Math.cos(hairAngle) * hairLength;
+                const endY = startY + Math.sin(hairAngle) * hairLength;
+                const controlX = startX + Math.cos(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 8;
+                const controlY = startY + Math.sin(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 8;
+
+                // Very subtle tapered stray hair
+                const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+                gradient.addColorStop(0, baseColor);
+                gradient.addColorStop(0.8, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.5) + ')'));
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, '0)'));
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = thickness;
+                ctx.lineCap = 'round';
+
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+
+        // Take picture button
         takePicBtn.addEventListener('click', async () => {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
@@ -575,35 +740,34 @@
                 cameraModal.classList.add('active');
             } catch (error) {
                 alert('Camera access denied or unavailable.');
-                console.error('Camera error:', error);
             }
         });
 
-        // Capture button - take photo from camera
+        // Capture button
         captureBtn.addEventListener('click', () => {
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = video.videoWidth;
             tempCanvas.height = video.videoHeight;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Flip back to un-mirror since video preview is mirrored
+            // Flip back to un-mirror
             tempCtx.translate(tempCanvas.width, 0);
             tempCtx.scale(-1, 1);
             tempCtx.drawImage(video, 0, 0);
 
-            // Convert to image and update photo layer
-            photoLayer = new Image();
-            photoLayer.onload = () => {
-                drawLayers();
+            originalImage = new Image();
+            originalImage.onload = () => {
+                homeScreen.classList.add('hidden');
+                editorScreen.classList.add('active');
+                detectFace(originalImage);
                 closeCamera();
             };
-            photoLayer.src = tempCanvas.toDataURL('image/jpeg', 0.95);
+            originalImage.src = tempCanvas.toDataURL('image/jpeg', 0.95);
         });
 
-        // Close camera button
+        // Close camera
         closeCameraBtn.addEventListener('click', closeCamera);
 
-        // Close camera function
         function closeCamera() {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
@@ -612,268 +776,68 @@
             cameraModal.classList.remove('active');
         }
 
-        // Upload pic button - open file picker
+        // Upload picture button
         uploadPicBtn.addEventListener('click', () => {
             fileInput.click();
         });
 
-        // File input change - load selected image
+        // File input change
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    photoLayer = new Image();
-                    photoLayer.onload = () => {
-                        drawLayers();
+                    originalImage = new Image();
+                    originalImage.onload = () => {
+                        homeScreen.classList.add('hidden');
+                        editorScreen.classList.add('active');
+                        detectFace(originalImage);
                     };
-                    photoLayer.src = event.target.result;
+                    originalImage.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Track current menu state
-        let currentMenu = 'yourpic'; // 'yourpic', 'background', 'frame', or 'unibrow'
-
-        // Back carat - return to home screen OR previous menu
-        backCarat.addEventListener('click', () => {
-            if (currentMenu === 'unibrow') {
-                // Go back to "Frame" menu
-                menuTitle.textContent = 'Frame';
-                unibrowGrid.classList.remove('active');
-                frameGrid.classList.add('active');
-                forwardCarat.classList.remove('hidden');
-                saveBtn.classList.remove('active');
-                currentMenu = 'frame';
-            } else if (currentMenu === 'frame') {
-                // Go back to "Background" menu
-                menuTitle.textContent = 'Background';
-                frameGrid.classList.remove('active');
-                thumbnailGrid.classList.add('active');
-                currentMenu = 'background';
-            } else if (currentMenu === 'background') {
-                // Go back to "Your pic" menu
-                menuTitle.textContent = 'Your pic';
-                menuButtons.style.display = 'flex';
-                thumbnailGrid.classList.remove('active');
-                currentMenu = 'yourpic';
-            } else {
-                // Go back to home screen
-                editorScreen.classList.remove('active');
-                homeScreen.classList.remove('hidden');
-            }
+        // Slider inputs
+        unibrowSlider.addEventListener('input', () => {
+            drawCanvas();
         });
 
-        // Forward carat - switch to next menu
-        forwardCarat.addEventListener('click', () => {
-            if (currentMenu === 'yourpic') {
-                // Go to Background menu
-                menuTitle.textContent = 'Background';
-                menuButtons.style.display = 'none';
-                thumbnailGrid.classList.add('active');
-                currentMenu = 'background';
-            } else if (currentMenu === 'background') {
-                // Go to Frame menu
-                menuTitle.textContent = 'Frame';
-                thumbnailGrid.classList.remove('active');
-                frameGrid.classList.add('active');
-                currentMenu = 'frame';
-            } else if (currentMenu === 'frame') {
-                // Go to Unibrow menu
-                menuTitle.textContent = 'Unibrow';
-                frameGrid.classList.remove('active');
-                unibrowGrid.classList.add('active');
-                forwardCarat.classList.add('hidden');
-                saveBtn.classList.add('active');
-                currentMenu = 'unibrow';
-            }
+        darknessSlider.addEventListener('input', () => {
+            drawCanvas();
         });
 
-        // Background thumbnail click - change editor background
-        const bgThumbnails = document.querySelectorAll('#thumbnailGrid .thumbnail');
-        bgThumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', () => {
-                const bgImage = thumbnail.src;
-                editorScreen.style.backgroundImage = `url('${bgImage}')`;
-            });
+        colorSlider.addEventListener('input', () => {
+            drawCanvas();
         });
 
-        // Frame thumbnail click - change frame layer on canvas
-        const frameThumbnails = document.querySelectorAll('#frameGrid .thumbnail-frame');
-        frameThumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', () => {
-                const frameImage = thumbnail.src;
-                frameLayer = new Image();
-                frameLayer.onload = () => {
-                    drawLayers();
-                };
-                frameLayer.src = frameImage;
-            });
+        // Upload New Pic button - show modal
+        newPicBtn.addEventListener('click', () => {
+            newPicModal.classList.add('active');
         });
 
-        // Unibrow thumbnail click - add unibrow layer to canvas
-        const unibrowThumbnails = document.querySelectorAll('#unibrowGrid .thumbnail-frame');
-        unibrowThumbnails.forEach(thumbnail => {
-            thumbnail.addEventListener('click', () => {
-                const unibrowImage = thumbnail.src;
-                const newUnibrow = new Image();
-                newUnibrow.onload = () => {
-                    // If no unibrow exists yet, center it initially
-                    if (!unibrowLayer) {
-                        unibrowWidth = 300;
-                        unibrowHeight = (newUnibrow.height / newUnibrow.width) * unibrowWidth;
-                        unibrowX = (canvas.width - unibrowWidth) / 2;
-                        unibrowY = (canvas.height - unibrowHeight) / 2;
-                        unibrowRotation = 0;
-                        unibrowScale = 1;
-                    } else {
-                        // Keep current position, scale, rotation - just update dimensions
-                        unibrowWidth = 300;
-                        unibrowHeight = (newUnibrow.height / newUnibrow.width) * unibrowWidth;
-                    }
-                    unibrowLayer = newUnibrow;
-                    drawLayers();
-                };
-                newUnibrow.src = unibrowImage;
-            });
+        // Close new pic modal
+        closeNewPicModal.addEventListener('click', () => {
+            newPicModal.classList.remove('active');
         });
 
-        // Touch manipulation for unibrow
-        let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let unibrowStartX = 0;
-        let unibrowStartY = 0;
-        let initialPinchDistance = 0;
-        let initialScale = 1;
-        let initialRotationAngle = 0;
-        let initialRotation = 0;
-
-        canvas.addEventListener('touchstart', (e) => {
-            if (!unibrowLayer) return;
-
-            if (e.touches.length === 1) {
-                // Single touch - drag
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const touchX = (touch.clientX - rect.left) * scaleX;
-                const touchY = (touch.clientY - rect.top) * scaleY;
-
-                // Check if touch is on unibrow (simple bounding box check)
-                const centerX = unibrowX + (unibrowWidth * unibrowScale) / 2;
-                const centerY = unibrowY + (unibrowHeight * unibrowScale) / 2;
-                const halfWidth = (unibrowWidth * unibrowScale) / 2;
-                const halfHeight = (unibrowHeight * unibrowScale) / 2;
-
-                if (touchX >= centerX - halfWidth && touchX <= centerX + halfWidth &&
-                    touchY >= centerY - halfHeight && touchY <= centerY + halfHeight) {
-                    isDragging = true;
-                    dragStartX = touchX;
-                    dragStartY = touchY;
-                    unibrowStartX = unibrowX;
-                    unibrowStartY = unibrowY;
-                    e.preventDefault();
-                }
-            } else if (e.touches.length === 2) {
-                // Two fingers - pinch and rotate
-                isDragging = false;
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-
-                // Store initial pinch distance
-                initialPinchDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                initialScale = unibrowScale;
-
-                // Store initial rotation angle
-                initialRotationAngle = Math.atan2(
-                    touch2.clientY - touch1.clientY,
-                    touch2.clientX - touch1.clientX
-                ) * (180 / Math.PI);
-                initialRotation = unibrowRotation;
-
-                e.preventDefault();
-            }
+        // Modal Take Pic button
+        modalTakePicBtn.addEventListener('click', () => {
+            newPicModal.classList.remove('active');
+            openCamera();
         });
 
-        canvas.addEventListener('touchmove', (e) => {
-            if (!unibrowLayer) return;
-
-            if (e.touches.length === 1 && isDragging) {
-                // Single touch - drag
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                const touchX = (touch.clientX - rect.left) * scaleX;
-                const touchY = (touch.clientY - rect.top) * scaleY;
-
-                const deltaX = touchX - dragStartX;
-                const deltaY = touchY - dragStartY;
-
-                unibrowX = unibrowStartX + deltaX;
-                unibrowY = unibrowStartY + deltaY;
-
-                drawLayers();
-                e.preventDefault();
-            } else if (e.touches.length === 2) {
-                // Two fingers - pinch and rotate
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-
-                // Calculate pinch scale
-                const currentDistance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                const scaleChange = currentDistance / initialPinchDistance;
-                unibrowScale = initialScale * scaleChange;
-
-                // Calculate rotation
-                const currentAngle = Math.atan2(
-                    touch2.clientY - touch1.clientY,
-                    touch2.clientX - touch1.clientX
-                ) * (180 / Math.PI);
-                const angleDelta = currentAngle - initialRotationAngle;
-                unibrowRotation = initialRotation + angleDelta;
-
-                drawLayers();
-                e.preventDefault();
-            }
+        // Modal Upload Pic button
+        modalUploadPicBtn.addEventListener('click', () => {
+            newPicModal.classList.remove('active');
+            fileInput.click();
         });
 
-        canvas.addEventListener('touchend', (e) => {
-            if (e.touches.length === 0) {
-                isDragging = false;
-            }
-        });
-
-        // Save button - go to preview screen
-        saveBtn.addEventListener('click', () => {
-            // Copy the main canvas to preview canvas
-            previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-            previewCtx.drawImage(canvas, 0, 0);
-
-            // Hide editor, show preview
-            editorScreen.classList.remove('active');
-            previewScreen.classList.add('active');
-        });
-
-        // Edit button - return to editor from preview
-        editPreviewBtn.addEventListener('click', () => {
-            previewScreen.classList.remove('active');
-            editorScreen.classList.add('active');
-        });
-
-        // Share Preview button - share the image
-        sharePreviewBtn.addEventListener('click', async () => {
+        // Share button
+        shareBtn.addEventListener('click', async () => {
             try {
-                previewCanvas.toBlob(async (blob) => {
+                canvas.toBlob(async (blob) => {
                     const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -885,17 +849,15 @@
                             });
                         } catch (err) {
                             if (err.name !== 'AbortError') {
-                                console.error('Share failed:', err);
-                                alert('Could not share. Try Save instead!');
+                                alert('Could not share.');
                             }
                         }
                     } else {
-                        alert('Sharing not supported on this device. Use Save button instead!');
+                        alert('Sharing not supported on this device.');
                     }
                 }, 'image/png');
             } catch (err) {
-                console.error('Error creating share:', err);
-                alert('Could not share. Try Save instead!');
+                alert('Could not share.');
             }
         });
     </script>
