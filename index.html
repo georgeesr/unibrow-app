@@ -259,10 +259,6 @@
             transition: transform 0.2s, opacity 0.2s;
         }
 
-        .action-btn.save {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        }
-
         .action-btn.share {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
@@ -447,7 +443,6 @@
             </div>
             <div class="action-buttons">
                 <button class="action-btn" id="newPicBtn">Upload New Pic</button>
-                <button class="action-btn save" id="saveBtn">Save</button>
                 <button class="action-btn share" id="shareBtn">Share</button>
             </div>
         </div>
@@ -497,7 +492,6 @@
         const darknessSlider = document.getElementById('darknessSlider');
         const colorSlider = document.getElementById('colorSlider');
         const newPicBtn = document.getElementById('newPicBtn');
-        const saveBtn = document.getElementById('saveBtn');
         const shareBtn = document.getElementById('shareBtn');
         const loadingText = document.getElementById('loadingText');
         const loadingMessage = document.getElementById('loadingMessage');
@@ -1156,33 +1150,6 @@
         // Close new pic modal
         closeNewPicModal.addEventListener('click', () => {
             newPicModal.classList.remove('active');
-        });
-
-        // Save button
-        saveBtn.addEventListener('click', () => {
-            // Create a square canvas for export
-            const exportCanvas = document.createElement('canvas');
-            const size = Math.min(canvas.width, canvas.height);
-            exportCanvas.width = size;
-            exportCanvas.height = size;
-            const exportCtx = exportCanvas.getContext('2d');
-
-            // Draw the canvas content (should already be square)
-            exportCtx.drawImage(canvas, 0, 0, size, size);
-
-            console.log('Save - Export canvas size:', exportCanvas.width, 'x', exportCanvas.height);
-
-            // Convert to blob and download
-            exportCanvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'my-unibrow.jpg';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 'image/jpeg', 0.92);
         });
 
         // Modal Take Pic button
