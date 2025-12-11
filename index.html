@@ -142,6 +142,12 @@
         .editor-logo {
             display: flex;
             align-items: center;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .editor-logo:active {
+            opacity: 0.7;
         }
 
         .editor-logo img {
@@ -414,7 +420,7 @@
     <!-- Editor Screen -->
     <div class="editor-screen" id="editorScreen">
         <div class="editor-header">
-            <div class="editor-logo">
+            <div class="editor-logo" id="homeLogoBtn">
                 <img src="mfah_logo.png" alt="MFAH Logo">
             </div>
             <div class="editor-title">
@@ -495,6 +501,7 @@
         const modalTakePicBtn = document.getElementById('modalTakePicBtn');
         const modalUploadPicBtn = document.getElementById('modalUploadPicBtn');
         const closeNewPicModal = document.getElementById('closeNewPicModal');
+        const homeLogoBtn = document.getElementById('homeLogoBtn');
 
         let originalImage = null;
         let faceLandmarks = null;
@@ -1136,6 +1143,16 @@
 
         colorSlider.addEventListener('input', () => {
             drawCanvas();
+        });
+
+        // Home logo button - go back to home screen
+        homeLogoBtn.addEventListener('click', () => {
+            editorScreen.classList.remove('active');
+            homeScreen.classList.remove('hidden');
+            // Reset sliders
+            unibrowSlider.value = 0;
+            darknessSlider.value = 0;
+            colorSlider.value = 0;
         });
 
         // Upload New Pic button - show modal
