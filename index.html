@@ -731,17 +731,7 @@
         }
 
         // Take picture button
-        takePicBtn.addEventListener('click', async () => {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
-                });
-                video.srcObject = stream;
-                cameraModal.classList.add('active');
-            } catch (error) {
-                alert('Camera access denied or unavailable.');
-            }
-        });
+        takePicBtn.addEventListener('click', openCamera);
 
         // Capture button
         captureBtn.addEventListener('click', () => {
@@ -767,6 +757,18 @@
 
         // Close camera
         closeCameraBtn.addEventListener('click', closeCamera);
+
+        async function openCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+                });
+                video.srcObject = stream;
+                cameraModal.classList.add('active');
+            } catch (error) {
+                alert('Camera access denied or unavailable.');
+            }
+        }
 
         function closeCamera() {
             if (stream) {
