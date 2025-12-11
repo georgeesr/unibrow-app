@@ -564,10 +564,21 @@
                 let avgB = Math.floor(totalB / samples);
 
                 // Apply darkness adjustment (-50 to +50)
+                // At max darkness (+50), force eyebrows to be very dark/black
                 const darknessValue = parseInt(darknessSlider.value);
-                avgR = Math.max(0, Math.min(255, avgR - darknessValue));
-                avgG = Math.max(0, Math.min(255, avgG - darknessValue));
-                avgB = Math.max(0, Math.min(255, avgB - darknessValue));
+
+                if (darknessValue > 0) {
+                    // Darken mode: multiply by percentage to force toward black
+                    const darknessFactor = 1 - (darknessValue / 50 * 0.9); // Up to 90% darker
+                    avgR = Math.floor(avgR * darknessFactor);
+                    avgG = Math.floor(avgG * darknessFactor);
+                    avgB = Math.floor(avgB * darknessFactor);
+                } else {
+                    // Lighten mode: simple subtraction
+                    avgR = Math.min(255, avgR - darknessValue);
+                    avgG = Math.min(255, avgG - darknessValue);
+                    avgB = Math.min(255, avgB - darknessValue);
+                }
 
                 // Apply highlights (0-100)
                 const highlightValue = parseInt(colorSlider.value) / 100;
