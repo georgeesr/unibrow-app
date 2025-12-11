@@ -259,6 +259,10 @@
             transition: transform 0.2s, opacity 0.2s;
         }
 
+        .action-btn.save {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        }
+
         .action-btn.share {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
         }
@@ -288,11 +292,24 @@
             display: flex;
         }
 
+        .video-container {
+            position: relative;
+            width: 100vw;
+            aspect-ratio: 1 / 1;
+            max-width: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            background: black;
+        }
+
         #video {
-            max-width: 100%;
-            max-height: 70vh;
-            border-radius: 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             transform: scaleX(-1);
+            object-fit: cover;
         }
 
         .camera-controls {
@@ -430,6 +447,7 @@
             </div>
             <div class="action-buttons">
                 <button class="action-btn" id="newPicBtn">Upload New Pic</button>
+                <button class="action-btn save" id="saveBtn">Save</button>
                 <button class="action-btn share" id="shareBtn">Share</button>
             </div>
         </div>
@@ -441,7 +459,9 @@
 
     <!-- Camera Modal -->
     <div class="camera-modal" id="cameraModal">
-        <video id="video" autoplay playsinline></video>
+        <div class="video-container">
+            <video id="video" autoplay playsinline></video>
+        </div>
         <div class="camera-controls">
             <img src="capture.svg" alt="Capture" id="captureBtn" class="camera-btn-img">
             <img src="close.svg" alt="Close" id="closeCameraBtn" class="camera-btn-img">
@@ -477,6 +497,7 @@
         const darknessSlider = document.getElementById('darknessSlider');
         const colorSlider = document.getElementById('colorSlider');
         const newPicBtn = document.getElementById('newPicBtn');
+        const saveBtn = document.getElementById('saveBtn');
         const shareBtn = document.getElementById('shareBtn');
         const loadingText = document.getElementById('loadingText');
         const loadingMessage = document.getElementById('loadingMessage');
@@ -580,13 +601,26 @@
         function drawCanvas() {
             if (!originalImage) return;
 
-            // Set canvas size to match image
-            canvas.width = originalImage.width;
-            canvas.height = originalImage.height;
+            // Set canvas to square based on smaller dimension to ensure full coverage
+            const size = Math.min(originalImage.width, originalImage.height);
+            canvas.width = size;
+            canvas.height = size;
 
-            // Draw original image
+            console.log('Original image:', originalImage.width, 'x', originalImage.height);
+            console.log('Canvas size:', canvas.width, 'x', canvas.height);
+
+            // Calculate crop to center the image in square
+            const sourceSize = size;
+            const sourceX = (originalImage.width - size) / 2;
+            const sourceY = (originalImage.height - size) / 2;
+
+            // Draw original image cropped to square
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(originalImage, 0, 0);
+            ctx.drawImage(
+                originalImage,
+                sourceX, sourceY, sourceSize, sourceSize,  // source crop
+                0, 0, size, size  // destination
+            );
 
             // Draw unibrow if landmarks exist
             if (faceLandmarks && unibrowSlider.value > 0) {
@@ -621,17 +655,22 @@
             const intensity = unibrowSlider.value / 100;
             if (intensity === 0) return;
 
+            // Calculate crop offset for landmark adjustment
+            const size = Math.min(originalImage.width, originalImage.height);
+            const offsetX = (originalImage.width - size) / 2;
+            const offsetY = (originalImage.height - size) / 2;
+
             // Get all eyebrow landmark points for accurate shape
             // Left eyebrow landmarks (outer to inner): 46, 53, 52, 65, 55
             const leftBrowPoints = [46, 53, 52, 65, 55].map(idx => ({
-                x: faceLandmarks[idx].x * canvas.width,
-                y: faceLandmarks[idx].y * canvas.height
+                x: (faceLandmarks[idx].x * originalImage.width - offsetX) * (canvas.width / size),
+                y: (faceLandmarks[idx].y * originalImage.height - offsetY) * (canvas.height / size)
             }));
 
             // Right eyebrow landmarks (inner to outer): 285, 295, 282, 283, 276
             const rightBrowPoints = [285, 295, 282, 283, 276].map(idx => ({
-                x: faceLandmarks[idx].x * canvas.width,
-                y: faceLandmarks[idx].y * canvas.height
+                x: (faceLandmarks[idx].x * originalImage.width - offsetX) * (canvas.width / size),
+                y: (faceLandmarks[idx].y * originalImage.height - offsetY) * (canvas.height / size)
             }));
 
             // Combine into one continuous path (left to right)
@@ -640,8 +679,8 @@
             // Add bridge points to connect the eyebrows smoothly
             const bridge = faceLandmarks[168]; // Nose bridge
             const bridgePoint = {
-                x: bridge.x * canvas.width,
-                y: bridge.y * canvas.height - 5
+                x: (bridge.x * originalImage.width - offsetX) * (canvas.width / size),
+                y: (bridge.y * originalImage.height - offsetY) * (canvas.height / size) - 5
             };
 
             // Insert bridge point between the two eyebrows
@@ -995,14 +1034,26 @@
         // Capture button
         captureBtn.addEventListener('click', () => {
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
+
+            // Crop to square based on smaller dimension
+            const sourceSize = Math.min(video.videoWidth, video.videoHeight);
+
+            // Scale down to max 2000x2000 for faster loading
+            const maxSize = 2000;
+            const targetSize = Math.min(sourceSize, maxSize);
+
+            tempCanvas.width = targetSize;
+            tempCanvas.height = targetSize;
             const tempCtx = tempCanvas.getContext('2d');
 
-            // Flip back to un-mirror
-            tempCtx.translate(tempCanvas.width, 0);
+            // Calculate crop offset to center the video
+            const sourceX = (video.videoWidth - sourceSize) / 2;
+            const sourceY = (video.videoHeight - sourceSize) / 2;
+
+            // Flip and draw cropped square
+            tempCtx.translate(targetSize, 0);
             tempCtx.scale(-1, 1);
-            tempCtx.drawImage(video, 0, 0);
+            tempCtx.drawImage(video, sourceX, sourceY, sourceSize, sourceSize, 0, 0, targetSize, targetSize);
 
             originalImage = new Image();
             originalImage.onload = () => {
@@ -1011,7 +1062,7 @@
                 detectFace(originalImage);
                 closeCamera();
             };
-            originalImage.src = tempCanvas.toDataURL('image/jpeg', 0.95);
+            originalImage.src = tempCanvas.toDataURL('image/jpeg', 0.90);
         });
 
         // Close camera
@@ -1054,11 +1105,31 @@
 
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    originalImage = new Image();
-                    originalImage.onload = () => {
-                        detectFace(originalImage);
+                    const tempImage = new Image();
+                    tempImage.onload = () => {
+                        // Resize uploaded image to max 2000x2000 for performance
+                        const maxSize = 2000;
+                        const sourceSize = Math.min(tempImage.width, tempImage.height);
+                        const targetSize = Math.min(sourceSize, maxSize);
+
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = targetSize;
+                        tempCanvas.height = targetSize;
+                        const tempCtx = tempCanvas.getContext('2d');
+
+                        // Center crop to square
+                        const sourceX = (tempImage.width - sourceSize) / 2;
+                        const sourceY = (tempImage.height - sourceSize) / 2;
+                        tempCtx.drawImage(tempImage, sourceX, sourceY, sourceSize, sourceSize, 0, 0, targetSize, targetSize);
+
+                        // Create optimized image
+                        originalImage = new Image();
+                        originalImage.onload = () => {
+                            detectFace(originalImage);
+                        };
+                        originalImage.src = tempCanvas.toDataURL('image/jpeg', 0.90);
                     };
-                    originalImage.src = event.target.result;
+                    tempImage.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -1087,6 +1158,33 @@
             newPicModal.classList.remove('active');
         });
 
+        // Save button
+        saveBtn.addEventListener('click', () => {
+            // Create a square canvas for export
+            const exportCanvas = document.createElement('canvas');
+            const size = Math.min(canvas.width, canvas.height);
+            exportCanvas.width = size;
+            exportCanvas.height = size;
+            const exportCtx = exportCanvas.getContext('2d');
+
+            // Draw the canvas content (should already be square)
+            exportCtx.drawImage(canvas, 0, 0, size, size);
+
+            console.log('Save - Export canvas size:', exportCanvas.width, 'x', exportCanvas.height);
+
+            // Convert to blob and download
+            exportCanvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'my-unibrow.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.92);
+        });
+
         // Modal Take Pic button
         modalTakePicBtn.addEventListener('click', () => {
             newPicModal.classList.remove('active');
@@ -1102,8 +1200,20 @@
         // Share button
         shareBtn.addEventListener('click', async () => {
             try {
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], 'my-unibrow.png', { type: 'image/png' });
+                // Create a new square canvas to ensure 1:1 ratio
+                const exportCanvas = document.createElement('canvas');
+                const size = Math.min(canvas.width, canvas.height);
+                exportCanvas.width = size;
+                exportCanvas.height = size;
+                const exportCtx = exportCanvas.getContext('2d');
+
+                // Draw the main canvas onto the export canvas (should already be square)
+                exportCtx.drawImage(canvas, 0, 0, size, size);
+
+                console.log('Export canvas size:', exportCanvas.width, 'x', exportCanvas.height);
+
+                exportCanvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'my-unibrow.jpg', { type: 'image/jpeg' });
 
                     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
@@ -1120,7 +1230,7 @@
                     } else {
                         alert('Sharing not supported on this device.');
                     }
-                }, 'image/png');
+                }, 'image/jpeg', 0.92);
             } catch (err) {
                 alert('Could not share.');
             }
