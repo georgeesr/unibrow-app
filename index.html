@@ -654,7 +654,7 @@
                 // Use sampled eyebrow colors with varied opacity for depth
                 const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
                 const baseColor = eyebrowColors[colorIndex];
-                const opacity = 0.7 + Math.random() * 0.3;
+                const opacity = 0.4 + Math.random() * 0.4; // Softer, more varied opacity
                 ctx.strokeStyle = baseColor.replace(/[\d\.]+\)$/g, opacity + ')');
                 ctx.lineWidth = thickness;
                 ctx.lineCap = 'round';
@@ -666,10 +666,11 @@
                 const controlX = startX + Math.cos(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 5;
                 const controlY = startY + Math.sin(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 5;
 
-                // Create gradient for tapered hair effect
+                // Create gradient for tapered, soft hair effect
                 const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-                gradient.addColorStop(0, baseColor);
-                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.3) + ')'));
+                gradient.addColorStop(0, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.8) + ')'));
+                gradient.addColorStop(0.6, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.3) + ')'));
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, '0)'));
                 ctx.strokeStyle = gradient;
 
                 ctx.beginPath();
@@ -700,15 +701,16 @@
 
                 const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
                 const baseColor = eyebrowColors[colorIndex];
-                const opacity = 0.65 + Math.random() * 0.25;
+                const opacity = 0.4 + Math.random() * 0.3;
 
                 const endX = startX + Math.cos(hairAngle) * hairLength;
                 const endY = startY + Math.sin(hairAngle) * hairLength;
 
-                // Tapered gradient
+                // Tapered gradient with soft edges
                 const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-                gradient.addColorStop(0, baseColor);
-                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.2) + ')'));
+                gradient.addColorStop(0, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.7) + ')'));
+                gradient.addColorStop(0.5, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.4) + ')'));
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, '0)'));
                 ctx.strokeStyle = gradient;
                 ctx.lineWidth = thickness;
                 ctx.lineCap = 'round';
@@ -741,18 +743,19 @@
 
                 const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
                 const baseColor = eyebrowColors[colorIndex];
-                const opacity = 0.8 + Math.random() * 0.2;
+                const opacity = 0.5 + Math.random() * 0.3;
 
                 const endX = startX + Math.cos(hairAngle) * hairLength;
                 const endY = startY + Math.sin(hairAngle) * hairLength;
                 const controlX = startX + Math.cos(hairAngle) * hairLength * 0.6 + (Math.random() - 0.5) * 6;
                 const controlY = startY + Math.sin(hairAngle) * hairLength * 0.6 + (Math.random() - 0.5) * 6;
 
-                // Tapered thick hair
+                // Tapered thick hair with very soft edges
                 const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-                gradient.addColorStop(0, baseColor);
-                gradient.addColorStop(0.7, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.7) + ')'));
-                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.1) + ')'));
+                gradient.addColorStop(0, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.8) + ')'));
+                gradient.addColorStop(0.5, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.5) + ')'));
+                gradient.addColorStop(0.85, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.15) + ')'));
+                gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, '0)'));
                 ctx.strokeStyle = gradient;
                 ctx.lineWidth = thickness;
                 ctx.lineCap = 'round';
@@ -786,17 +789,17 @@
 
                 const colorIndex = Math.floor(Math.random() * eyebrowColors.length);
                 const baseColor = eyebrowColors[colorIndex];
-                const opacity = 0.6 + Math.random() * 0.3;
+                const opacity = 0.3 + Math.random() * 0.3;
 
                 const endX = startX + Math.cos(hairAngle) * hairLength;
                 const endY = startY + Math.sin(hairAngle) * hairLength;
                 const controlX = startX + Math.cos(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 8;
                 const controlY = startY + Math.sin(hairAngle) * hairLength * 0.5 + (Math.random() - 0.5) * 8;
 
-                // Very subtle tapered stray hair
+                // Very subtle tapered stray hair with soft wispy edges
                 const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-                gradient.addColorStop(0, baseColor);
-                gradient.addColorStop(0.8, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.5) + ')'));
+                gradient.addColorStop(0, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.7) + ')'));
+                gradient.addColorStop(0.6, baseColor.replace(/[\d\.]+\)$/g, (opacity * 0.3) + ')'));
                 gradient.addColorStop(1, baseColor.replace(/[\d\.]+\)$/g, '0)'));
                 ctx.strokeStyle = gradient;
                 ctx.lineWidth = thickness;
