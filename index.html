@@ -268,6 +268,19 @@
             margin-top: 20px;
             display: flex;
             gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .camera-btn-img {
+            height: 50px;
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .camera-btn-img:active {
+            transform: scale(0.95);
         }
 
         .camera-btn {
@@ -351,8 +364,8 @@
     <div class="camera-modal" id="cameraModal">
         <video id="video" autoplay playsinline></video>
         <div class="camera-controls">
-            <button class="camera-btn" id="captureBtn">Capture</button>
-            <button class="camera-btn close-btn" id="closeCameraBtn">Close</button>
+            <img src="capture.svg" alt="Capture" id="captureBtn" class="camera-btn-img">
+            <img src="close.svg" alt="Close" id="closeCameraBtn" class="camera-btn-img">
         </div>
     </div>
 
