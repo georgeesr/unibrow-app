@@ -245,7 +245,7 @@
         .action-buttons {
             display: flex;
             gap: 0;
-            margin-top: 60px;
+            margin-top: 40px;
             padding: 0 20px;
             justify-content: flex-start;
             align-items: center;
@@ -340,24 +340,23 @@
             transform: scale(0.95);
         }
 
-        .camera-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: 600;
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .modal-btn-img {
+            height: 28.75px;
+            width: auto;
             cursor: pointer;
             transition: transform 0.2s;
         }
 
-        .camera-btn:active {
+        .modal-btn-img:active {
             transform: scale(0.95);
-        }
-
-        .close-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         }
 
         .loading {
@@ -466,10 +465,10 @@
 
     <!-- Upload New Pic Modal -->
     <div class="camera-modal" id="newPicModal">
-        <div style="display: flex; flex-direction: column; gap: 20px; max-width: 300px; width: 90%;">
-            <button class="camera-btn" id="modalTakePicBtn">Take a Pic</button>
-            <button class="camera-btn" id="modalUploadPicBtn">Upload a Pic</button>
-            <button class="camera-btn close-btn" id="closeNewPicModal">Cancel</button>
+        <div class="modal-buttons">
+            <img src="take_pic.svg" alt="Take a Pic" id="modalTakePicBtn" class="modal-btn-img">
+            <img src="upload_pic.svg" alt="Upload a Pic" id="modalUploadPicBtn" class="modal-btn-img">
+            <img src="close.svg" alt="Cancel" id="closeNewPicModal" class="modal-btn-img">
         </div>
     </div>
 
