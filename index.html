@@ -28,50 +28,66 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            background: url('new_images/unibrow_background_rf.jpg') center center / cover no-repeat;
-            background-attachment: fixed;
+            background: white;
             overflow-x: hidden;
         }
 
         .home-screen {
-            text-align: center;
-            padding: 40px 20px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .logo {
+            padding: 20px;
+            align-self: flex-start;
+        }
+
+        .logo img {
+            max-width: 150px;
+            height: auto;
         }
 
         .title-image {
+            padding: 0 20px;
             max-width: 400px;
             width: 90%;
             height: auto;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
+        }
+
+        .hero-container {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .hero-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
             width: 100%;
+            padding: 0 20px;
+            align-items: center;
+        }
+
+        .button-container img {
             max-width: 300px;
-        }
-
-        .main-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 40px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.3em;
-            font-weight: 600;
+            width: 90%;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s;
         }
 
-        .main-btn:active {
+        .button-container img:active {
             transform: scale(0.95);
         }
 
@@ -276,10 +292,16 @@
 <body>
     <!-- Home Screen -->
     <div class="home-screen" id="homeScreen">
-        <img src="new_images/unibrow_title.png" alt="Unibrow Generator" class="title-image">
+        <div class="logo">
+            <img src="mfah_logo.png" alt="MFAH Logo">
+        </div>
+        <img src="fk_unibrow_title.svg" alt="Frida Kahlo Unibrow Generator" class="title-image">
+        <div class="hero-container">
+            <img src="frida-eyes.jpg" alt="Frida Kahlo Eyes">
+        </div>
         <div class="button-container">
-            <button class="main-btn" id="takePicBtn">Take a Pic</button>
-            <button class="main-btn" id="uploadPicBtn">Upload a Pic</button>
+            <img src="take_pic.svg" alt="Take a Pic" id="takePicBtn">
+            <img src="upload_pic.svg" alt="Upload a Pic" id="uploadPicBtn">
         </div>
     </div>
 
