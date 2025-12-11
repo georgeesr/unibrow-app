@@ -317,7 +317,6 @@
             align-items: center;
             max-width: 100%;
             width: 100%;
-            position: relative;
         }
 
         .camera-btn-img {
@@ -328,14 +327,11 @@
         }
 
         .camera-btn-img:first-child {
-            position: relative;
-            margin-left: 20px;
+            margin-right: auto;
         }
 
         .camera-btn-img:last-child {
-            position: absolute;
-            left: 50%;
-            margin-left: 20px;
+            margin-left: calc(50% - 20px);
         }
 
         .camera-btn-img:active {
