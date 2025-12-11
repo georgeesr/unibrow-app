@@ -140,6 +140,18 @@
             height: auto;
         }
 
+        .editor-title {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .editor-title img {
+            height: 100px;
+            width: auto;
+        }
+
         .canvas-container {
             position: relative;
             max-width: 500px;
@@ -388,6 +400,9 @@
     <div class="editor-screen" id="editorScreen">
         <div class="editor-logo">
             <img src="mfah_logo.png" alt="MFAH Logo">
+        </div>
+        <div class="editor-title">
+            <img src="fk_unibrow_title.svg" alt="Frida Kahlo Unibrow Generator">
         </div>
         <div class="canvas-container">
             <canvas id="canvas"></canvas>
