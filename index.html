@@ -355,6 +355,10 @@
             transition: transform 0.2s;
         }
 
+        .modal-btn-img:last-child {
+            margin-top: 20px;
+        }
+
         .modal-btn-img:active {
             transform: scale(0.95);
         }
@@ -621,24 +625,15 @@
 
             // Draw stamp in bottom right corner
             if (stampImage && stampImage.complete) {
-                ctx.save();
+                // Position stamp in bottom right corner - maintain aspect ratio
+                const stampWidth = canvas.width * 0.25; // 25% of image width
+                const stampHeight = (stampImage.height / stampImage.width) * stampWidth; // Maintain aspect ratio
+                const margin = canvas.width * 0.03; // 3% margin
+                const stampX = canvas.width - stampWidth - margin; // Right edge with margin
+                const stampY = canvas.height - stampHeight - margin; // Bottom edge with margin
 
-                // Position stamp in bottom right corner
-                const stampWidth = canvas.width * 0.2; // 20% of image width
-                const stampHeight = stampWidth; // Keep it square
-                const margin = canvas.width * 0.03; // 3% margin from edges
-                const stampX = canvas.width - stampWidth - margin;
-                const stampY = canvas.height - stampHeight - margin;
-
-                // Move to stamp position and rotate counter-clockwise slightly
-                ctx.translate(stampX + stampWidth / 2, stampY + stampHeight / 2);
-                ctx.rotate(-0.15); // Rotate counter-clockwise by ~8.6 degrees
-                ctx.translate(-(stampX + stampWidth / 2), -(stampY + stampHeight / 2));
-
-                // Draw stamp
+                // Draw stamp without rotation
                 ctx.drawImage(stampImage, stampX, stampY, stampWidth, stampHeight);
-
-                ctx.restore();
             }
         }
 
