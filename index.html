@@ -128,14 +128,20 @@
             display: flex;
         }
 
-        .editor-logo {
-            position: absolute;
-            top: 15px;
-            left: 20px;
+        .editor-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            flex-shrink: 0;
+            background: white;
             z-index: 100;
+        }
+
+        .editor-logo {
             display: flex;
             align-items: center;
-            height: 45px;
         }
 
         .editor-logo img {
@@ -144,12 +150,9 @@
         }
 
         .editor-title {
-            position: absolute;
-            top: 15px;
-            right: 40px;
-            z-index: 100;
             display: flex;
             align-items: center;
+            padding-right: 20px;
         }
 
         .editor-title img {
@@ -401,11 +404,13 @@
 
     <!-- Editor Screen -->
     <div class="editor-screen" id="editorScreen">
-        <div class="editor-logo">
-            <img src="mfah_logo.png" alt="MFAH Logo">
-        </div>
-        <div class="editor-title">
-            <img src="fk_unibrow_title.svg" alt="Frida Kahlo Unibrow Generator">
+        <div class="editor-header">
+            <div class="editor-logo">
+                <img src="mfah_logo.png" alt="MFAH Logo">
+            </div>
+            <div class="editor-title">
+                <img src="fk_unibrow_title.svg" alt="Frida Kahlo Unibrow Generator">
+            </div>
         </div>
         <div class="canvas-container">
             <canvas id="canvas"></canvas>
