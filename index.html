@@ -358,6 +358,11 @@
         let faceLandmarks = null;
         let stream = null;
         let faceMesh = null;
+        let stampImage = null;
+
+        // Load stamp image
+        stampImage = new Image();
+        stampImage.src = 'stamp.svg';
 
         // Initialize MediaPipe Face Mesh
         function initFaceMesh() {
@@ -455,6 +460,28 @@
             // Draw unibrow if landmarks exist
             if (faceLandmarks && unibrowSlider.value > 0) {
                 drawUnibrow();
+            }
+
+            // Draw stamp in bottom right corner
+            if (stampImage && stampImage.complete) {
+                ctx.save();
+
+                // Position stamp in bottom right corner
+                const stampWidth = canvas.width * 0.2; // 20% of image width
+                const stampHeight = stampWidth; // Keep it square
+                const margin = canvas.width * 0.03; // 3% margin from edges
+                const stampX = canvas.width - stampWidth - margin;
+                const stampY = canvas.height - stampHeight - margin;
+
+                // Move to stamp position and rotate counter-clockwise slightly
+                ctx.translate(stampX + stampWidth / 2, stampY + stampHeight / 2);
+                ctx.rotate(-0.15); // Rotate counter-clockwise by ~8.6 degrees
+                ctx.translate(-(stampX + stampWidth / 2), -(stampY + stampHeight / 2));
+
+                // Draw stamp
+                ctx.drawImage(stampImage, stampX, stampY, stampWidth, stampHeight);
+
+                ctx.restore();
             }
         }
 
