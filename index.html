@@ -158,7 +158,6 @@
         .editor-title {
             display: flex;
             align-items: center;
-            padding-right: 20px;
         }
 
         .editor-title img {
@@ -188,15 +187,13 @@
         .controls {
             width: 100%;
             max-width: 500px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            padding: 15px 0;
             flex-shrink: 0;
         }
 
         .slider-container {
             margin-bottom: 12px;
+            padding: 0 20px;
         }
 
         .slider-label {
@@ -207,11 +204,17 @@
             color: #333;
         }
 
+        .slider-label-img {
+            display: block;
+            margin-bottom: 6px;
+            height: 10px;
+            width: auto;
+        }
+
         .slider {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #ddd;
+            height: 1px;
+            background: #000;
             outline: none;
             -webkit-appearance: none;
         }
@@ -219,59 +222,52 @@
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #dc4a38;
             cursor: pointer;
+            border: none;
+            box-shadow: none;
         }
 
         .slider::-moz-range-thumb {
-            width: 25px;
-            height: 25px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #dc4a38;
             cursor: pointer;
             border: none;
+            box-shadow: none;
         }
 
-        /* Highlights slider */
-        #colorSlider {
-            background: linear-gradient(to right,
-                #333 0%,         /* No highlights */
-                #666 25%,        /* Subtle */
-                #999 50%,        /* Medium */
-                #ccc 75%,        /* Strong */
-                #fff 100%        /* Very strong */
-            );
-        }
 
         .action-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 5px;
+            gap: 0;
+            margin-top: 60px;
+            padding: 0 20px;
+            justify-content: flex-start;
+            align-items: center;
         }
 
-        .action-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 50px;
-            font-size: 0.95em;
-            font-weight: 600;
+        .action-btn-img {
+            height: 28.75px;
+            width: auto;
             cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
-        .action-btn.share {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        .action-btn-img:first-child {
+            margin-right: auto;
         }
 
-        .action-btn:active {
+        .action-btn-img:last-child {
+            margin-left: calc(50% - 20px);
+        }
+
+        .action-btn-img:active {
             transform: scale(0.95);
-            opacity: 0.8;
         }
 
         /* Camera Modal */
@@ -432,20 +428,20 @@
         </div>
         <div class="controls">
             <div class="slider-container">
-                <label class="slider-label">Unibrow Intensity</label>
+                <img src="intensity.svg" alt="Unibrow Intensity" class="slider-label-img">
                 <input type="range" min="0" max="100" value="0" class="slider" id="unibrowSlider">
             </div>
             <div class="slider-container">
-                <label class="slider-label">Darkness</label>
+                <img src="darkness.svg" alt="Darkness" class="slider-label-img">
                 <input type="range" min="-50" max="50" value="0" class="slider" id="darknessSlider">
             </div>
             <div class="slider-container">
-                <label class="slider-label">Highlights</label>
+                <img src="highlights.svg" alt="Highlights" class="slider-label-img">
                 <input type="range" min="0" max="100" value="0" class="slider" id="colorSlider">
             </div>
             <div class="action-buttons">
-                <button class="action-btn" id="newPicBtn">Upload New Pic</button>
-                <button class="action-btn share" id="shareBtn">Share</button>
+                <img src="upload_new.svg" alt="Upload New Pic" id="newPicBtn" class="action-btn-img">
+                <img src="share.svg" alt="Share" id="shareBtn" class="action-btn-img">
             </div>
         </div>
         <div class="loading" id="loadingText" style="display: none;">
