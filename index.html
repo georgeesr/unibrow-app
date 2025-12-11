@@ -374,16 +374,55 @@
             }
         }
 
+        // Resize image for faster processing
+        function resizeImageForProcessing(image) {
+            const maxDimension = 1280;
+            let width = image.width;
+            let height = image.height;
+
+            if (width <= maxDimension && height <= maxDimension) {
+                return image;
+            }
+
+            const tempCanvas = document.createElement('canvas');
+            if (width > height) {
+                tempCanvas.width = maxDimension;
+                tempCanvas.height = (height / width) * maxDimension;
+            } else {
+                tempCanvas.height = maxDimension;
+                tempCanvas.width = (width / height) * maxDimension;
+            }
+
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(image, 0, 0, tempCanvas.width, tempCanvas.height);
+
+            const resizedImage = new Image();
+            resizedImage.src = tempCanvas.toDataURL('image/jpeg', 0.9);
+            return resizedImage;
+        }
+
         // Process image for face detection
         async function detectFace(image) {
             loadingText.style.display = 'block';
             loadingText.textContent = 'Detecting face...';
 
             if (!faceMesh) {
+                loadingText.textContent = 'Loading face detection...';
                 initFaceMesh();
+                // Wait a bit for initialization
+                await new Promise(resolve => setTimeout(resolve, 100));
             }
 
-            await faceMesh.send({image: image});
+            loadingText.textContent = 'Analyzing image...';
+            const processImage = resizeImageForProcessing(image);
+
+            if (processImage !== image) {
+                await new Promise(resolve => {
+                    processImage.onload = resolve;
+                });
+            }
+
+            await faceMesh.send({image: processImage});
         }
 
         // Draw canvas with unibrow
@@ -787,12 +826,16 @@
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Show loading immediately
+                homeScreen.classList.add('hidden');
+                editorScreen.classList.add('active');
+                loadingText.style.display = 'block';
+                loadingText.textContent = 'Loading image...';
+
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     originalImage = new Image();
                     originalImage.onload = () => {
-                        homeScreen.classList.add('hidden');
-                        editorScreen.classList.add('active');
                         detectFace(originalImage);
                     };
                     originalImage.src = event.target.result;
