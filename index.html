@@ -638,6 +638,14 @@
                 return tangentAngle - Math.PI / 2;
             }
 
+            // Helper function for gaussian distribution (more natural clustering)
+            function gaussianRandom() {
+                let u = 0, v = 0;
+                while(u === 0) u = Math.random();
+                while(v === 0) v = Math.random();
+                return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            }
+
             // Draw base hair layer following the exact eyebrow shape - MUCH BUSHIER!
             const numStrokes = Math.floor(400 + intensity * 3000);
 
@@ -646,16 +654,19 @@
                 const basePoint = getPointOnCurve(t);
                 const baseAngle = getAngleAtPoint(t);
 
-                // Much wider spread for bushiness and thickness
+                // Much wider spread for bushiness and thickness with gaussian distribution
                 const spreadRadius = 40 * intensity;
                 const randomAngle = Math.random() * Math.PI * 2;
-                const randomDist = Math.random() * spreadRadius;
+                // Use gaussian distribution for more natural clustering toward center
+                const randomDist = Math.abs(gaussianRandom()) * spreadRadius * 0.4;
 
                 const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
                 const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
 
                 // Hair grows perpendicular to eyebrow curve with more variation
-                const angleVariation = (Math.random() - 0.5) * 0.8;
+                // Add smooth flowing variation based on position
+                const flowVariation = Math.sin(t * Math.PI * 4 + i * 0.01) * 0.3;
+                const angleVariation = (Math.random() - 0.5) * 0.8 + flowVariation;
                 const hairAngle = baseAngle + angleVariation;
 
                 // Longer, wilder hair
@@ -699,12 +710,13 @@
 
                 const spreadRadius = 38 * intensity;
                 const randomAngle = Math.random() * Math.PI * 2;
-                const randomDist = Math.random() * spreadRadius;
+                const randomDist = Math.abs(gaussianRandom()) * spreadRadius * 0.4;
 
                 const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
                 const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
 
-                const angleVariation = (Math.random() - 0.5) * 0.7;
+                const flowVariation = Math.sin(t * Math.PI * 3 + i * 0.015) * 0.25;
+                const angleVariation = (Math.random() - 0.5) * 0.7 + flowVariation;
                 const hairAngle = baseAngle + angleVariation;
 
                 const hairLength = (18 + Math.random() * 40) * (0.7 + intensity * 1.2);
@@ -741,12 +753,13 @@
 
                 const spreadRadius = 45 * intensity;
                 const randomAngle = Math.random() * Math.PI * 2;
-                const randomDist = Math.random() * spreadRadius;
+                const randomDist = Math.abs(gaussianRandom()) * spreadRadius * 0.45;
 
                 const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
                 const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
 
-                const angleVariation = (Math.random() - 0.5) * 0.9;
+                const flowVariation = Math.sin(t * Math.PI * 2.5 + i * 0.02) * 0.35;
+                const angleVariation = (Math.random() - 0.5) * 0.9 + flowVariation;
                 const hairAngle = baseAngle + angleVariation;
 
                 const hairLength = (22 + Math.random() * 45) * (0.8 + intensity * 1.1);
@@ -786,13 +799,14 @@
 
                 const spreadRadius = 50 * intensity;
                 const randomAngle = Math.random() * Math.PI * 2;
-                const randomDist = Math.random() * spreadRadius;
+                const randomDist = Math.abs(gaussianRandom()) * spreadRadius * 0.5;
 
                 const startX = basePoint.x + Math.cos(randomAngle) * randomDist;
                 const startY = basePoint.y + Math.sin(randomAngle) * randomDist;
 
-                // More extreme angle variation for wild strays
-                const angleVariation = (Math.random() - 0.5) * 1.2;
+                // More extreme angle variation for wild strays with flow
+                const flowVariation = Math.sin(t * Math.PI * 2 + i * 0.025) * 0.4;
+                const angleVariation = (Math.random() - 0.5) * 1.2 + flowVariation;
                 const hairAngle = baseAngle + angleVariation;
 
                 const hairLength = (18 + Math.random() * 35) * (0.9 + intensity * 0.8);
