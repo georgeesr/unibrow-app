@@ -121,10 +121,23 @@
             justify-content: center;
             gap: 10px;
             overflow: hidden;
+            position: relative;
         }
 
         .editor-screen.active {
             display: flex;
+        }
+
+        .editor-logo {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .editor-logo img {
+            width: 90px;
+            height: auto;
         }
 
         .canvas-container {
@@ -373,6 +386,9 @@
 
     <!-- Editor Screen -->
     <div class="editor-screen" id="editorScreen">
+        <div class="editor-logo">
+            <img src="mfah_logo.png" alt="MFAH Logo">
+        </div>
         <div class="canvas-container">
             <canvas id="canvas"></canvas>
         </div>
