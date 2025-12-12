@@ -744,7 +744,7 @@
             // Draw stamp in bottom right corner
             if (stampImage && stampImage.complete) {
                 // Position stamp in bottom right corner - maintain aspect ratio
-                const stampWidth = canvas.width * 0.25; // 25% of image width
+                const stampWidth = canvas.width * 0.225; // 22.5% of image width (10% smaller than 25%)
                 const stampHeight = (stampImage.height / stampImage.width) * stampWidth; // Maintain aspect ratio
                 const bottomMargin = canvas.width * 0.03; // 3% margin on bottom only
                 const stampX = canvas.width - stampWidth; // Flush against right edge (no margin)
