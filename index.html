@@ -161,8 +161,14 @@
         }
 
         .editor-title img {
-            height: 45px;
+            height: 28.75px;
             width: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .editor-title img:active {
+            transform: scale(0.95);
         }
 
         .canvas-container {
@@ -423,7 +429,7 @@
                 <img src="mfah_logo.png" alt="MFAH Logo">
             </div>
             <div class="editor-title">
-                <img src="fk_unibrow_title.svg" alt="Frida Kahlo Unibrow Generator">
+                <img src="share_app.svg" alt="Share App" id="shareAppBtn">
             </div>
         </div>
         <div class="canvas-container">
