@@ -352,22 +352,14 @@
         }
 
         .camera-controls {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            display: flex;
             flex-direction: row;
             gap: 0;
             padding: 0 20px 20px 20px;
+            margin-top: 20px;
             align-items: center;
             justify-content: flex-start;
-            background: white;
-            z-index: 2001;
-        }
-
-        .camera-controls.active {
-            display: flex;
+            width: 100%;
         }
 
         .camera-btn-img {
@@ -550,12 +542,10 @@
         <div class="video-container">
             <video id="video" autoplay playsinline></video>
         </div>
-    </div>
-
-    <!-- Camera Controls -->
-    <div class="camera-controls" id="cameraControlsContainer">
-        <img src="capture.svg" alt="Capture" id="captureBtn" class="camera-btn-img">
-        <img src="close.svg" alt="Close" id="closeCameraBtn" class="camera-btn-img">
+        <div class="camera-controls">
+            <img src="capture.svg" alt="Capture" id="captureBtn" class="camera-btn-img">
+            <img src="close.svg" alt="Close" id="closeCameraBtn" class="camera-btn-img">
+        </div>
     </div>
 
     <!-- Hidden file input -->
@@ -596,7 +586,6 @@
         const closeNewPicModal = document.getElementById('closeNewPicModal');
         const homeLogoBtn = document.getElementById('homeLogoBtn');
         const shareAppBtn = document.getElementById('shareAppBtn');
-        const cameraControlsContainer = document.getElementById('cameraControlsContainer');
 
         let originalImage = null;
         let faceLandmarks = null;
@@ -1158,7 +1147,6 @@
                 });
                 video.srcObject = stream;
                 cameraModal.classList.add('active');
-                cameraControlsContainer.classList.add('active');
             } catch (error) {
                 alert('Camera access denied or unavailable.');
             }
@@ -1170,7 +1158,6 @@
                 stream = null;
             }
             cameraModal.classList.remove('active');
-            cameraControlsContainer.classList.remove('active');
         }
 
         // Upload picture button
