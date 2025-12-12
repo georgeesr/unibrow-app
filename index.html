@@ -88,24 +88,28 @@
             flex-shrink: 0;
         }
 
+        .button-svg:first-child,
         .button-container svg:first-child,
         .button-container img:first-child {
             margin-right: auto;
         }
 
+        .button-svg:last-child,
         .button-container svg:last-child,
         .button-container img:last-child {
             margin-left: calc(50% - 20px);
         }
 
+        .button-svg,
         .button-container svg,
         .button-container img {
-            height: 28.75px;
+            height: 28.75px !important;
             width: auto;
             cursor: pointer;
             transition: transform 0.2s;
         }
 
+        .button-svg:active,
         .button-container svg:active,
         .button-container img:active {
             transform: scale(0.95);
@@ -437,7 +441,7 @@
             <img src="frida-eyes.jpg" alt="Frida Kahlo Eyes">
         </div>
         <div class="button-container">
-            <svg id="takePicBtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344.29 92.9">
+            <svg id="takePicBtn" class="button-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 344.29 92.9">
                 <g>
                     <path d="M24.12,54.39h-10.56V10.2H0V.97h37.68v9.23h-13.56v44.19Z"/>
                     <path d="M56.5.97h12.92l14.42,53.42h-10.56l-3.29-13.2h-14.13l-3.22,13.2h-10.56L56.5.97ZM62.94,10.63l-4.97,21.86h9.98l-5.01-21.86Z"/>
@@ -449,7 +453,7 @@
                 </g>
                 <rect class="animated-line" fill="#dc4a38" y="73.08" width="317.16" height="19.82"/>
             </svg>
-            <svg id="uploadPicBtn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 431.96 92.9">
+            <svg id="uploadPicBtn" class="button-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 431.96 92.9">
                 <rect class="animated-line" fill="#dc4a38" y="73.08" width="317.16" height="19.82"/>
                 <g>
                     <path d="M0,34.67V.97h10.56v36.35c0,2.67.68,4.77,2.04,6.28,1.36,1.51,3.24,2.27,5.65,2.27s4.29-.76,5.65-2.27c1.36-1.51,2.04-3.61,2.04-6.28V.97h10.56v33.71c0,7.25-1.44,12.52-4.33,15.82-2.89,3.29-7.53,4.94-13.92,4.94s-11-1.65-13.9-4.94c-2.9-3.29-4.35-8.56-4.35-15.82Z"/>
