@@ -628,9 +628,9 @@
                 // Position stamp in bottom right corner - maintain aspect ratio
                 const stampWidth = canvas.width * 0.25; // 25% of image width
                 const stampHeight = (stampImage.height / stampImage.width) * stampWidth; // Maintain aspect ratio
-                const margin = canvas.width * 0.03; // 3% margin
-                const stampX = canvas.width - stampWidth - margin; // Right edge with margin
-                const stampY = canvas.height - stampHeight - margin; // Bottom edge with margin
+                const bottomMargin = canvas.width * 0.03; // 3% margin on bottom only
+                const stampX = canvas.width - stampWidth; // Flush against right edge (no margin)
+                const stampY = canvas.height - stampHeight - bottomMargin; // Bottom edge with margin
 
                 // Draw stamp without rotation
                 ctx.drawImage(stampImage, stampX, stampY, stampWidth, stampHeight);
