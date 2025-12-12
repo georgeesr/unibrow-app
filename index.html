@@ -88,14 +88,17 @@
             flex-shrink: 0;
         }
 
+        .button-container svg:first-child,
         .button-container img:first-child {
             margin-right: auto;
         }
 
+        .button-container svg:last-child,
         .button-container img:last-child {
             margin-left: calc(50% - 20px);
         }
 
+        .button-container svg,
         .button-container img {
             height: 28.75px;
             width: auto;
@@ -103,6 +106,7 @@
             transition: transform 0.2s;
         }
 
+        .button-container svg:active,
         .button-container img:active {
             transform: scale(0.95);
         }
