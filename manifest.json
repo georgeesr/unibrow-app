@@ -2,7 +2,7 @@
   "name": "Frida Kahlo Unibrow Generator",
   "short_name": "Unibrow Maker",
   "description": "Create your own Frida Kahlo-inspired unibrow",
-  "start_url": "/",
+  "start_url": "/unibrow-app/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#219fc1",
