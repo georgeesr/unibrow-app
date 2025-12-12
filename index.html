@@ -507,6 +507,7 @@
         const modalUploadPicBtn = document.getElementById('modalUploadPicBtn');
         const closeNewPicModal = document.getElementById('closeNewPicModal');
         const homeLogoBtn = document.getElementById('homeLogoBtn');
+        const shareAppBtn = document.getElementById('shareAppBtn');
 
         let originalImage = null;
         let faceLandmarks = null;
@@ -1209,6 +1210,28 @@
                 }, 'image/jpeg', 0.92);
             } catch (err) {
                 alert('Could not share.');
+            }
+        });
+
+        // Share App button
+        shareAppBtn.addEventListener('click', async () => {
+            try {
+                const appUrl = window.location.href;
+                if (navigator.share) {
+                    await navigator.share({
+                        title: 'Frida Kahlo Unibrow Generator',
+                        text: 'Create your own Frida Kahlo-inspired unibrow! Try this fun app:',
+                        url: appUrl
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    await navigator.clipboard.writeText(appUrl);
+                    alert('App link copied to clipboard!');
+                }
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error('Share failed:', err);
+                }
             }
         });
     </script>
