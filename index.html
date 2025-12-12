@@ -107,6 +107,21 @@
             transform: scale(0.95);
         }
 
+        /* Animate red underline in SVG buttons */
+        @keyframes growLine {
+            from {
+                transform: scaleX(0);
+            }
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        .button-container img .cls-1 {
+            transform-origin: left center;
+            animation: growLine 0.8s ease-out forwards;
+        }
+
         .hidden {
             display: none !important;
         }
